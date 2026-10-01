@@ -1,0 +1,7 @@
+condition,sh_6k_correct_of_100,sh_32k_correct_of_100,total_of_200
+FULL,100,98,198
+BM25,100,98,198
+MEM0,91,85,176
+MEM0_r2,91,85,176
+MEM0_T,99,98,197
+MEM0_S,100,98,198

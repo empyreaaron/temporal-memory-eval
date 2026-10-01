@@ -1,0 +1,58 @@
+{
+  "_comment": "Copy to pipeline/config.local.json and put your key there (that file is git-ignored). Prices are DeepSeek peak rates per million tokens; off-peak is half.",
+  "base_url": "https://api.deepseek.com",
+  "model": "deepseek-flash",
+  "api_key": "PASTE_YOUR_KEY_HERE",
+  "api_key_env": "DEEPSEEK_API_KEY",
+  "answer_thinking": true,
+  "reasoning_effort": "high",
+  "embed_model": "BAAI/bge-small-en-v1.5",
+  "fc_sources": [
+    "factconsolidation_sh_6k",
+    "factconsolidation_sh_32k"
+  ],
+  "fc_conditions": [
+    "FULL",
+    "BM25",
+    "MEM0",
+    "MEM0_r2",
+    "MEM0_T",
+    "MEM0_S"
+  ],
+  "fc_chunk_facts": 50,
+  "fc_bm25_k": 20,
+  "lme_types": [
+    "knowledge-update"
+  ],
+  "lme_skip_b_stage": true,
+  "lme_variants": [
+    "M",
+    "Mnd",
+    "Mord",
+    "M_r2",
+    "M_r3"
+  ],
+  "lme_variants_date_order": [
+    "M",
+    "M_r2",
+    "M_r3",
+    "Mord"
+  ],
+  "lme_variants_with_dates": [
+    "M",
+    "M_r2",
+    "M_r3"
+  ],
+  "lme_default_variant": "M0",
+  "lme_default_usage": "all",
+  "mem0_top_k": 20,
+  "workers": 6,
+  "embed_threads": 2,
+  "price_in_per_m": 0.3,
+  "price_in_cache_hit_per_m": 0.006,
+  "price_out_per_m": 1.2,
+  "est_answer_out_tokens": 1500,
+  "budget_usd": 20.0,
+  "timeout_s": 600,
+  "est_baseline_out_tokens": 600
+}

@@ -1,0 +1,8 @@
+# Versions used for the reported results (Python 3.10).
+mem0ai==2.1.0
+fastembed==0.8.0
+qdrant-client==1.19.1
+openai==3.17.0
+onnxruntime==1.23.2
+numpy==2.2.6
+pyarrow==25.0.1
