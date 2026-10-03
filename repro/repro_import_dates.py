@@ -6,16 +6,20 @@ resolved against today's date, and the wrong absolute date is written into the s
 Setting created_at in metadata does not help: it changes the record's timestamp, not the extracted text.
 
 Run (tested with mem0ai 2.1.0):
-    pip install mem0ai
+    pip install mem0ai==2.1.0
     OPENAI_API_KEY=...   python repro_import_dates.py      # mem0 defaults (OpenAI LLM + embeddings)
-or  DEEPSEEK_API_KEY=... python repro_import_dates.py      # DeepSeek LLM + local embeddings (pip install fastembed)
+or  DEEPSEEK_API_KEY=... python repro_import_dates.py      # DeepSeek LLM + local embeddings (pip install fastembed==0.8.0)
+The stored text is written by an LLM, so its wording, and the date in it, change with the model and the day you
+run it. What it shows is that the date follows the run date, not the conversation date (2023-05-01).
 """
-import logging, os, tempfile
+import datetime, logging, os, platform, sys, tempfile
+from importlib import metadata
 
 os.environ.setdefault("MEM0_TELEMETRY", "False")
 from mem0 import Memory
 
 logging.getLogger("mem0").setLevel(logging.ERROR)
+print(f"Run date: {datetime.date.today()} | mem0ai {metadata.version('mem0ai')} | Python {platform.python_version()}")
 
 path = tempfile.mkdtemp(prefix="mem0_import_")
 if os.environ.get("DEEPSEEK_API_KEY"):
@@ -34,6 +38,9 @@ else:
 m.add([{"role": "user", "content": "Last week I adopted a cat named Luna."}], user_id="import_demo",
       metadata={"created_at": "2023-05-01T09:00:00"})
 print("Conversation date: 2023-05-01")
-for r in m.get_all(filters={"user_id": "import_demo"})["results"]:
+stored = m.get_all(filters={"user_id": "import_demo"})["results"]
+for r in stored:
     print("  stored text:", r["memory"], "| created_at:", r.get("created_at"))
+if not stored:
+    sys.exit("No memory was extracted, so this run shows nothing; check the LLM settings and run it again.")
 m.vector_store.client.close()

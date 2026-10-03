@@ -52,7 +52,7 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 07741c45,knowledge-update,False,M_r3,0
 07741c45,knowledge-update,False,F,0
 07741c45,knowledge-update,False,R,0
-07741c45,knowledge-update,False,O,1
+07741c45,knowledge-update,False,O,0
 08e075c7,knowledge-update,False,M0,0
 08e075c7,knowledge-update,False,Mnd,1
 08e075c7,knowledge-update,False,Mord,1

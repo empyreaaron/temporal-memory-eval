@@ -731,7 +731,7 @@
 {"question_id": "031748ae_abs", "condition": "O", "correct": true, "review_note": "", "answer": "The history does not mention a “Software Engineer Manager” role. For your new role as **Senior Software Engineer**, you said you led **4 engineers** when you first clarified it. (Later you mentioned leading 5 engineers, which conflicts.)"}
 {"question_id": "06db6396", "condition": "O", "correct": true, "review_note": "", "answer": "You’ve completed **5 projects** since starting painting classes."}
 {"question_id": "07741c44", "condition": "O", "correct": true, "review_note": "", "answer": "Under your bed."}
-{"question_id": "07741c45", "condition": "O", "correct": true, "review_note": "", "answer": "You first said you kept them **under your bed**. In a later chat, you mentioned planning to store them in a **shoe rack in your closet**, but the history doesn’t confirm whether you actually moved them."}
+{"question_id": "07741c45", "condition": "O", "correct": false, "review_note": "old value / plan not confirmed (re-checked 2026-10-03 for consistency with M_r2, M_r3)", "answer": "You first said you kept them **under your bed**. In a later chat, you mentioned planning to store them in a **shoe rack in your closet**, but the history doesn’t confirm whether you actually moved them."}
 {"question_id": "08e075c7", "condition": "O", "correct": true, "review_note": "", "answer": "As of your last mention on 2023/09/02, you had been using your Fitbit Charge 3 for **9 months**. As of today (2023/09/04), that’s still about **9 months**."}
 {"question_id": "0977f2af", "condition": "O", "correct": true, "review_note": "", "answer": "Instant Pot."}
 {"question_id": "0ddfec37", "condition": "O", "correct": true, "review_note": "", "answer": "15 autographed baseballs."}

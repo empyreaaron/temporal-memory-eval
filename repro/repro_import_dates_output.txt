@@ -1,5 +1,6 @@
 # Output recorded on 2026-09-29 with mem0ai 2.1.0 and deepseek-flash (run date: late September 2026),
-# from an earlier combined script that made the identical add() call. Re-run this script to regenerate.
+# from an earlier combined script that made the identical add() call, before the script printed its run date
+# and versions. Re-running gives LLM-written text, so the wording and the exact date will differ.
 # The conversation is from 2023-05-01, but "last week" was resolved against the run date.
 Conversation date: 2023-05-01
   stored text: User adopted a cat named Luna around the week of September 21, 2026 | created_at: 2023-05-01T09:00:00

@@ -3,15 +3,19 @@
 Two tasks, all answers from the same model and the same answer settings:
   fc   MemoryAgentBench FactConsolidation (numbered facts, newer fact = larger number).
        FULL (all facts in the prompt), BM25 (top-20 facts), MEM0 (facts ingested into mem0),
-       MEM0_r2 (MEM0 answered again, for noise), MEM0_T (same store, memories labeled by storage batch from
-       mem0's created_at), MEM0_S (re-ingested with the extractor told to keep one memory per fact, not merge,
-       and keep each fact's serial number).
+       MEM0_r2 (MEM0 answered again, for noise), MEM0_T (same store; memories sorted by mem0's created_at,
+       labeled with one number per distinct created_at value, and a rule saying larger numbers are newer;
+       a label is a timestamp group, not necessarily one add() batch), MEM0_S (re-ingested with the
+       extractor told to keep one memory per fact, not merge, and keep each fact's serial number).
   lme  LongMemEval-S questions listed in data/question_ids.json.
        M0   plain default mem0: nothing about dates at write time, relevance order, no dates shown
        Mnd  write-time dates (session date told to the extractor, stored as created_at); relevance order;
             no dates shown
        Mord as Mnd but listed oldest to newest (and the prompt says so); no dates shown
-       M    chronological order with each memory's date shown; M_r2/M_r3 repeat M for noise
+       M    oldest-to-newest order with each memory's date shown; M_r2/M_r3 repeat M for noise
+       Mord and M (the published conditions) sort by calendar day only: memories from the same day keep
+       mem0's relevance order. Mord_ts and M_ts are the same conditions sorted by the full timestamp; they
+       are not part of the published results and are not run unless requested with --variants.
        run_baselines.py supplies F/R/O for the same questions.
 
 Usage (from the repository root):
@@ -19,17 +23,24 @@ Usage (from the repository root):
   python pipeline/run_mem0.py --smoke                        # tiny end-to-end test (~$0.03), outputs_smoke/
   python pipeline/run_mem0.py --task fc --fc-conds FULL,BM25,MEM0,MEM0_r2,MEM0_T,MEM0_S
   python pipeline/run_mem0.py --task lme --variants M,Mnd,Mord,M_r2,M_r3 --default-usage all
-  python pipeline/run_mem0.py --task lme --lme-types multi-session,temporal-reasoning                               --variants M,Mnd,Mord --default-usage all
-Re-run any command to resume after an interruption; finished items are skipped.
+  python pipeline/run_mem0.py --task lme --lme-types multi-session,temporal-reasoning --variants M,Mnd,Mord --default-usage all
+Re-run any command to resume after an interruption. The last record per question decides its status (the
+graders use the same rule): finished items are skipped, failed ones are retried. Every record carries a
+fingerprint of the settings, prompts and inputs that produced it; if an output file or memory store was
+made with different settings, the run stops instead of mixing them (use a new TME_WORK directory).
+Each run appends its settings (no key), package versions and input hashes to outputs/run_manifest.jsonl.
+The exit code is non-zero unless every planned item finished.
 
 Settings: pipeline/config.example.json, overridden by pipeline/config.local.json (key goes there or in the
 environment variable named by "api_key_env"). Never prints the key. Never reads gold/.
 Work directory (inputs/, outputs/, store/, models/): ./work, or set TME_WORK.
 mem0 telemetry is switched off; embeddings run locally on CPU (downloaded once into <work>/models/).
+budget_usd is checked before each API call, so calls already in flight can take the spend slightly past it.
 """
-import argparse, collections, json, math, os, re, shutil, sys, threading, time
+import argparse, collections, hashlib, json, math, os, platform, re, shutil, subprocess, sys, threading, time, uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime
+from datetime import datetime, timezone
+from importlib import metadata
 
 PIPE = os.path.dirname(os.path.abspath(__file__))
 WORK = os.environ.get("TME_WORK", os.path.join(os.path.dirname(PIPE), "work"))
@@ -43,7 +54,9 @@ FC_RULE = ("Pretend you are a knowledge management system. Each fact in the know
            "Give a very concise answer without other words.")          # adapted from MemoryAgentBench
 FC_PROMPT = "{rule}\n\nKnowledge pool:\n{pool}\n\nQuestion: {question}\nAnswer:"
 FC_CHUNK_MSG = "Here is a list of facts to remember:\n{facts}"
-# MEM0_T: order recovered from mem0's own created_at timestamps (facts were written batch by batch, in order)
+# MEM0_T: order recovered from mem0's own created_at timestamps (facts were written batch by batch, in order).
+# One label per distinct created_at value: one add() batch can span several timestamps (in the published runs
+# 10 batches gave 17 labels at 6k, 47 batches gave 84 at 32k), so labels mark write order, not batch identity.
 FC_RULE_T = ("Pretend you are a knowledge management system. Each memory in the knowledge pool is labeled with the "
              "order in which it was stored; a memory with a larger order number was stored later and is newer, and "
              "memories with the same number were stored at the same time. You "
@@ -95,6 +108,103 @@ def append_jsonl(path, rec):
         f.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
 
+def latest_by_id(path):
+    """Last record per id (re-runs append). The runner, grader and exporter all use this rule."""
+    return {x["id"]: x for x in load_jsonl(path)}
+
+
+# ---------------------------------------------------------------- fingerprints and run manifest
+def digest(obj):
+    return hashlib.sha256(json.dumps(obj, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()[:16]
+
+
+def file_sha256(path):
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for block in iter(lambda: f.read(1 << 20), b""):
+            h.update(block)
+    return h.hexdigest()
+
+
+def pkg_version(name):
+    try:
+        return metadata.version(name)
+    except metadata.PackageNotFoundError:
+        return None
+
+
+def answer_settings(cfg):
+    return {k: cfg.get(k) for k in ("model", "base_url", "answer_thinking", "reasoning_effort")}
+
+
+def store_settings(cfg, kind):
+    """Everything that shapes a memory store, except the per-item input (checked separately)."""
+    s = {"kind": kind, "model": cfg["model"], "base_url": cfg["base_url"], "embed_model": cfg["embed_model"],
+         "mem0ai": pkg_version("mem0ai")}
+    if kind in ("base", "serial"):
+        s.update(chunk_facts=cfg["fc_chunk_facts"], chunk_msg=FC_CHUNK_MSG,
+                 extract_note=FC_SERIAL_NOTE if kind == "serial" else None)
+    else:
+        s.update(extract_note=LME_DATE_NOTE if kind == "patched" else None)
+    return s
+
+
+def variant_def(cfg, v):
+    order = ("time" if v in cfg.get("lme_variants_time_order", []) else
+             "date" if v in cfg["lme_variants_date_order"] else "relevance")
+    return order, v in cfg["lme_variants_with_dates"]
+
+
+def output_fingerprints(cfg, inputs_sha):
+    """One fingerprint per output file: answer settings, prompt, retrieval settings, store settings, inputs."""
+    base = {"answer": answer_settings(cfg)}
+    fps = {}
+    for c in cfg["fc_conditions"]:
+        spec = dict(base, prompt=FC_PROMPT, rule=FC_RULE_T if c == "MEM0_T" else FC_RULE, inputs=inputs_sha.get("fc"))
+        if c == "BM25":
+            spec["bm25_k"] = cfg["fc_bm25_k"]
+        elif c in FC_MEM0_STORE:
+            spec.update(top_k=cfg["mem0_top_k"], store=store_settings(cfg, FC_MEM0_STORE[c]))
+        fps[f"fc_{c}.jsonl"] = digest(spec)
+    for v, mode in [(v, "patched") for v in cfg["lme_variants"]] + [(cfg["lme_default_variant"], "default")]:
+        order, dates = variant_def(cfg, v) if mode == "patched" else ("relevance", False)
+        fps[f"{v}.jsonl"] = digest(dict(base, prompt=LME_PROMPT, order=order, dates_shown=dates,
+                                        top_k=cfg["mem0_top_k"], store=store_settings(cfg, mode),
+                                        inputs=inputs_sha.get("lme")))
+    return fps
+
+
+def check_store(store, settings, item_input):
+    """A finished store is reused only if it was built with the same settings and the same input."""
+    want = {"settings": settings, "input": digest(item_input)}
+    path = os.path.join(store, "STORE_CONFIG.json")
+    have = None
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as f:
+            have = json.load(f)
+    if have != want:
+        raise RuntimeError(f"memory store {os.path.basename(store)} was built with other settings or input "
+                           "(or by an older version of this script); delete it or use a new work directory")
+
+
+def write_store_config(store, settings, item_input):
+    os.makedirs(store, exist_ok=True)
+    with open(os.path.join(store, "STORE_CONFIG.json"), "w", encoding="utf-8") as f:
+        json.dump({"settings": settings, "input": digest(item_input)}, f, indent=1)
+
+
+def write_manifest(out_dir, entry):
+    append_jsonl(os.path.join(out_dir, "run_manifest.jsonl"), entry)
+
+
+def git_commit():
+    try:
+        return subprocess.run(["git", "rev-parse", "HEAD"], cwd=os.path.dirname(PIPE), capture_output=True,
+                              text=True, timeout=10).stdout.strip() or None
+    except Exception:
+        return None
+
+
 # ---------------------------------------------------------------- cost meter and API wrapper
 class BudgetExceeded(Exception):
     pass
@@ -117,14 +227,18 @@ class Meter:
             STOP.set()
             raise BudgetExceeded(f"budget cap ${self.cfg['budget_usd']:.2f} reached")
 
-    def record(self, kind, usage, latency, out_chars):
+    def record(self, kind, usage, latency, out_chars, model=None):
+        """latency_s is the time of this one API call (the successful attempt), nothing else. Answer calls also
+        log the call_id, fingerprint and run of the answer record they produced, so a summary can keep exactly
+        the calls behind the graded answers."""
         c = self.cost(usage)
         with self.lock:
             self.spent += c
             self.calls += 1
         append_jsonl(self.path, {"ts": time.strftime("%Y-%m-%d %H:%M:%S"), "kind": kind,
                                  "item": getattr(CTX, "item", "?"), "latency_s": round(latency, 1),
-                                 "out_chars": out_chars, "cost": round(c, 6),
+                                 "out_chars": out_chars, "cost": round(c, 6), "model": model,
+                                 "run": self.cfg.get("_run"), **(getattr(CTX, "call", None) or {}),
                                  **{k: usage.get(k) for k in ("prompt_tokens", "completion_tokens",
                                                               "prompt_cache_hit_tokens")},
                                  "reasoning_tokens": (usage.get("completion_tokens_details") or {}).get("reasoning_tokens")})
@@ -155,7 +269,8 @@ def metered(create, meter, kind, extra_body=None):
                 delay *= 2
                 continue
             u = r.usage.model_dump() if getattr(r, "usage", None) else {}
-            meter.record(kind, u, time.time() - t0, len(r.choices[0].message.content or ""))
+            meter.record(kind, u, time.time() - t0, len(r.choices[0].message.content or ""),
+                         getattr(r, "model", None))                 # model id as reported by the API
             return r
     return wrapped
 
@@ -262,18 +377,47 @@ def fmt_date(iso):
     return iso[:10].replace("-", "/") if iso else "unknown date"
 
 
+def time_key(iso):
+    """Full created_at as a comparable time, or None if missing or unparseable. Times with a UTC offset
+    (mem0's own timestamps) are converted to UTC; times without one (the session dates we store) are taken
+    as given. One store holds only one kind, so the two are never compared with each other."""
+    try:
+        t = datetime.fromisoformat(iso)
+    except (TypeError, ValueError):
+        return None
+    return t.astimezone(timezone.utc).replace(tzinfo=None) if t.tzinfo else t
+
+
+def order_memories(by_score, order):
+    """'relevance': mem0's order. 'date': the published Mord/M ordering, by calendar day only, so memories
+    from the same day keep relevance order (and an unknown date sorts last). 'time': by full timestamp;
+    memories without a usable timestamp are put after the dated ones, in relevance order."""
+    if order == "relevance":
+        return list(by_score)
+    if order == "date":
+        return sorted(by_score, key=lambda x: x["date"])
+    dated = [x for x in by_score if time_key(x.get("created_at"))]
+    undated = [x for x in by_score if not time_key(x.get("created_at"))]
+    return sorted(dated, key=lambda x: time_key(x["created_at"])) + undated
+
+
 def answer_fn(cfg, key, meter):
     from openai import OpenAI
     client = OpenAI(api_key=key, base_url=cfg["base_url"], timeout=cfg["timeout_s"], max_retries=0)
     create = metered(client.chat.completions.create, meter, "answer")
 
-    def answer(prompt):
+    def answer(prompt, rec):
+        """rec: the output record this answer goes into; its call_id and fp are written to the call log."""
         kw = {"model": cfg["model"], "messages": [{"role": "user", "content": prompt}]}
         if cfg["answer_thinking"]:
             kw.update(extra_body={"thinking": {"type": "enabled"}}, reasoning_effort=cfg["reasoning_effort"])
         else:
             kw.update(extra_body={"thinking": {"type": "disabled"}}, temperature=0)
-        return create(**kw).choices[0].message.content or ""
+        CTX.call = {"call_id": rec.get("call_id"), "fp": rec.get("fp")}
+        try:
+            return create(**kw).choices[0].message.content or ""
+        finally:
+            CTX.call = None                                   # mem0's own extraction calls carry no call_id
     return answer
 
 
@@ -329,6 +473,13 @@ def estimate(cfg, fc, lme, default=(), ingested=frozenset()):
 
 
 # ---------------------------------------------------------------- tasks
+def new_rec(cfg, out_file, **kw):
+    """Every output record carries the settings fingerprint of its file, the id of the run that wrote it, and a
+    call_id that the call log repeats for the API call behind the answer."""
+    return {**kw, "fp": cfg["_fp"].get(out_file), "run": cfg.get("_run"), "call_id": uuid.uuid4().hex[:12],
+            "ts": time.strftime("%Y-%m-%d %H:%M:%S")}
+
+
 def fc_simple(cfg, answer, row, q, cond, out_path):
     CTX.item = f"fc_{cond}:{q['id']}"
     if cond == "FULL":
@@ -336,9 +487,9 @@ def fc_simple(cfg, answer, row, q, cond, out_path):
     else:
         idx = sorted(bm25_top(q["question"], row["facts"], cfg["fc_bm25_k"]))
         pool = "\n".join(row["facts"][i] for i in idx)
-    rec = {"id": q["id"], "source": row["source"], "cond": cond, "ts": time.strftime("%Y-%m-%d %H:%M:%S")}
+    rec = new_rec(cfg, f"fc_{cond}.jsonl", id=q["id"], source=row["source"], cond=cond)
     try:
-        rec["answer"] = answer(FC_PROMPT.format(rule=FC_RULE, pool=pool, question=q["question"]))
+        rec["answer"] = answer(FC_PROMPT.format(rule=FC_RULE, pool=pool, question=q["question"]), rec)
     except Exception as e:
         rec["error"] = str(e)[:300]
     append_jsonl(out_path, rec)
@@ -355,10 +506,13 @@ def fc_mem0_ingest(cfg, key, meter, row, store_root, dump_dir, kind="base"):
     CTX.item = f"{name}_ingest"
     store = os.path.join(store_root, name)
     marker = os.path.join(store, "INGEST_DONE")
+    settings = store_settings(cfg, kind)
     if os.path.exists(marker):
+        check_store(store, settings, row["facts"])
         return make_memory(cfg, key, store, meter)
     shutil.rmtree(store, ignore_errors=True)
     m = make_memory(cfg, key, store, meter)
+    write_store_config(store, settings, row["facts"])
     n = cfg["fc_chunk_facts"]
     chunks = [row["facts"][i:i + n] for i in range(0, len(row["facts"]), n)]
     for i, c in enumerate(chunks, 1):
@@ -366,18 +520,19 @@ def fc_mem0_ingest(cfg, key, meter, row, store_root, dump_dir, kind="base"):
               prompt=FC_SERIAL_NOTE if kind == "serial" else None)
         log(f"  [{name}] ingested chunk {i}/{len(chunks)} | spent ~${meter.spent:.3f}")
     count = dump_memories(m, "fc", os.path.join(dump_dir, f"{name}.json"))
-    open(marker, "w").write(str(count))
+    with open(marker, "w") as f:
+        f.write(str(count))
     log(f"  [{name}] {len(row['facts'])} facts -> {count} memories")
     return m
 
 
 def fc_mem0_question(cfg, answer, m, mlock, row, q, out_path, cond="MEM0"):
     CTX.item = f"fc_{cond}:{q['id']}"
-    rec = {"id": q["id"], "source": row["source"], "cond": cond, "ts": time.strftime("%Y-%m-%d %H:%M:%S")}
+    rec = new_rec(cfg, f"fc_{cond}.jsonl", id=q["id"], source=row["source"], cond=cond)
     try:
         with mlock:
             hits = m.search(q["question"], top_k=cfg["mem0_top_k"], filters={"user_id": "fc"})["results"]
-        if cond == "MEM0_T":        # label by storage batch (mem0's created_at); equal timestamps share a label
+        if cond == "MEM0_T":        # one label per distinct created_at value; equal timestamps share a label
             hits.sort(key=lambda h: h.get("created_at") or "")
             rank = {t: i for i, t in enumerate(sorted({h.get("created_at") or "" for h in hits}), 1)}
             rec["retrieved"] = [{"order": rank[h.get("created_at") or ""], "created_at": h.get("created_at"),
@@ -387,7 +542,7 @@ def fc_mem0_question(cfg, answer, m, mlock, row, q, out_path, cond="MEM0"):
         else:
             rec["retrieved"] = [h["memory"] for h in hits]
             pool, rule = "\n".join(rec["retrieved"]), FC_RULE
-        rec["answer"] = answer(FC_PROMPT.format(rule=rule, pool=pool, question=q["question"]))
+        rec["answer"] = answer(FC_PROMPT.format(rule=rule, pool=pool, question=q["question"]), rec)
     except Exception as e:
         rec["error"] = str(e)[:300]
     append_jsonl(out_path, rec)
@@ -397,19 +552,22 @@ def fc_mem0_question(cfg, answer, m, mlock, row, q, out_path, cond="MEM0"):
 def lme_item(cfg, key, meter, answer, r, store_root, dump_dir, out_dir, mode, variants):
     """mode 'patched': tell mem0 each session's date and store it as the memory date (our workaround).
        mode 'default': plain mem0 as a developer gets it out of the box (no dates at all).
-       Variants differ only in whether the answer prompt shows memory dates."""
+       Variants of one store differ only in the order of the memories and whether their dates are shown."""
     qid = r["id"]
     prefix = "lme" if mode == "patched" else "lme0"
     CTX.item = f"{prefix}:{qid}"
     store = os.path.join(store_root, f"{prefix}_{qid}")
     marker = os.path.join(store, "INGEST_DONE")
+    settings = store_settings(cfg, mode)
     recs = []
     try:
         if os.path.exists(marker):
+            check_store(store, settings, r["sessions"])
             m = make_memory(cfg, key, store, meter)
         else:
             shutil.rmtree(store, ignore_errors=True)
             m = make_memory(cfg, key, store, meter)
+            write_store_config(store, settings, r["sessions"])
             for i, s in enumerate(r["sessions"], 1):
                 msgs = [{"role": t["role"], "content": t["content"]} for t in s["turns"] if t["content"].strip()]
                 if msgs:
@@ -420,36 +578,38 @@ def lme_item(cfg, key, meter, answer, r, store_root, dump_dir, out_dir, mode, va
                         m.add(msgs, user_id=qid)
                 if i % 10 == 0 or i == len(r["sessions"]):
                     log(f"  [{prefix} {qid}] session {i}/{len(r['sessions'])} | spent ~${meter.spent:.3f}")
-            open(marker, "w").write(str(dump_memories(m, qid, os.path.join(dump_dir, f"{prefix}_{qid}.json"))))
+            with open(marker, "w") as f:
+                f.write(str(dump_memories(m, qid, os.path.join(dump_dir, f"{prefix}_{qid}.json"))))
         hits = m.search(r["question"], top_k=cfg["mem0_top_k"], filters={"user_id": qid})["results"]
-        by_score = [{"date": fmt_date(h.get("created_at")), "text": h["memory"],
+        by_score = [{"date": fmt_date(h.get("created_at")), "created_at": h.get("created_at"), "text": h["memory"],
                      "score": round(h.get("score") or 0, 3)} for h in hits]          # mem0's own order
-        by_date = sorted(by_score, key=lambda x: x["date"])
-        n_mem = int(open(marker).read())
+        with open(marker) as f:
+            n_mem = int(f.read())
         for v in variants:
-            # Two separate switches. Order: chronological (date order) or mem0's relevance order, which leaks
-            # no recency information. Display: show each memory's date or not. Mord = date order, no dates,
+            # Two separate switches. Order: oldest to newest, or mem0's relevance order, which leaks no
+            # recency information. Display: show each memory's date or not. Mord = date order, no dates,
             # with one line saying the list runs oldest to newest (otherwise the model cannot know).
-            date_order = v in cfg["lme_variants_date_order"]
-            show_dates = v in cfg["lme_variants_with_dates"]
-            retrieved = by_date if date_order else by_score
-            rec = {"id": qid, "cond": v, "mode": mode, "type": r["type"], "n_memories": n_mem,
-                   "order": "date" if date_order else "relevance", "dates_shown": show_dates,
-                   "retrieved": retrieved, "ts": time.strftime("%Y-%m-%d %H:%M:%S")}
+            order, show_dates = variant_def(cfg, v) if mode == "patched" else ("relevance", False)
+            retrieved = order_memories(by_score, order)
+            n_undated = sum(1 for x in retrieved if not time_key(x["created_at"]))
+            rec = new_rec(cfg, f"{v}.jsonl", id=qid, cond=v, mode=mode, type=r["type"], n_memories=n_mem,
+                          order=order, dates_shown=show_dates, n_undated=n_undated, retrieved=retrieved)
             mems = "\n".join((f"- ({x['date']}) {x['text']}" if show_dates else f"- {x['text']}") for x in retrieved)
-            if date_order and not show_dates:
+            if order == "time" and n_undated:
+                mems = "(Listed from oldest to newest; memories without a known date come last.)\n" + mems
+                log(f"  [{prefix} {qid} {v}] note: {n_undated} retrieved memories have no usable timestamp")
+            elif order != "relevance" and not show_dates:
                 mems = "(Listed from oldest to newest.)\n" + mems
             CTX.item = f"{prefix}:{qid}:{v}"                  # tag the call log with the answer variant
             try:
-                rec["answer"] = answer(LME_PROMPT.format(memories=mems, date=r["question_date"], question=r["question"]))
+                rec["answer"] = answer(LME_PROMPT.format(memories=mems, date=r["question_date"], question=r["question"]), rec)
             except Exception as e:
                 rec["error"] = str(e)[:300]
             append_jsonl(os.path.join(out_dir, f"{v}.jsonl"), rec)
             recs.append(rec)
     except Exception as e:
-        for v in variants:
-            rec = {"id": qid, "cond": v, "mode": mode, "type": r["type"], "error": str(e)[:300],
-                   "ts": time.strftime("%Y-%m-%d %H:%M:%S")}
+        for v in variants[len(recs):]:                       # variants not already recorded above
+            rec = new_rec(cfg, f"{v}.jsonl", id=qid, cond=v, mode=mode, type=r["type"], error=str(e)[:300])
             append_jsonl(os.path.join(out_dir, f"{v}.jsonl"), rec)
             recs.append(rec)
     return recs[0] if recs else {"id": qid, "cond": variants[0], "error": "no variant ran"}
@@ -478,6 +638,11 @@ def main():
     bad = [c for c in cfg["fc_conditions"] if c not in ("FULL", "BM25", *FC_MEM0_STORE)]
     if bad:
         sys.exit(f"Unknown fc condition(s): {bad}")
+    known = {"Mnd", *cfg["lme_variants_date_order"], *cfg.get("lme_variants_time_order", []),
+             *cfg["lme_variants_with_dates"]}
+    bad = [v for v in cfg["lme_variants"] if v not in known]
+    if bad:     # an unlisted name would silently run as relevance order without dates
+        sys.exit(f"Unknown lme variant(s): {bad}; known: {sorted(known)}")
     fc, lme, default = build_plan(cfg, args.smoke)
     if args.task == "fc": lme, default = [], []
     if args.task == "lme": fc = []
@@ -491,12 +656,30 @@ def main():
 
     out_files = [f"fc_{c}.jsonl" for c in cfg["fc_conditions"]] + [f"{v}.jsonl" for v in cfg["lme_variants"]] \
                 + [f"{cfg['lme_default_variant']}.jsonl"]
-    done = {p: {x["id"] for x in load_jsonl(os.path.join(out_dir, p)) if not x.get("error")} for p in out_files}
+    inputs = {k: os.path.join(WORK, "inputs", f"{k}.jsonl") for k in ("fc", "lme")}
+    inputs_sha = {k: file_sha256(p) for k, p in inputs.items() if os.path.exists(p)}
+    cfg["_fp"] = output_fingerprints(cfg, inputs_sha)
+    cfg["_run"] = time.strftime("%Y%m%d-%H%M%S")
+    done, foreign = {}, {}
+    for p in out_files:              # the last record per id decides: finished items are skipped, errors retried
+        last = latest_by_id(os.path.join(out_dir, p))
+        done[p] = {i for i, x in last.items() if not x.get("error")}
+        foreign[p] = sorted(i for i, x in last.items() if not x.get("error") and x.get("fp") != cfg["_fp"][p])
+    clash = {p: ids for p, ids in foreign.items() if ids}
+    if clash:
+        sys.exit("These output files hold answers made with other settings, prompts or inputs (or by an older "
+                 "version of this script), so resuming would mix conditions:\n"
+                 + "\n".join(f"  {p}: {len(ids)} answers, e.g. {ids[:3]}" for p, ids in clash.items())
+                 + f"\nUse a new work directory (set TME_WORK) or move those files out of {out_dir}.")
     fc = [dict(r, questions=qs) for r in fc                      # drop items finished in an earlier run
           if (qs := [q for q in r["questions"]
                      if any(q["id"] not in done[f"fc_{c}.jsonl"] for c in cfg["fc_conditions"])])]
     lme = [r for r in lme if any(r["id"] not in done[f"{v}.jsonl"] for v in cfg["lme_variants"])]
     default = [r for r in default if r["id"] not in done[f"{cfg['lme_default_variant']}.jsonl"]]
+    planned = ({(f"fc_{c}.jsonl", q["id"]) for r in fc for q in r["questions"] for c in cfg["fc_conditions"]}
+               | {(f"{v}.jsonl", r["id"]) for r in lme for v in cfg["lme_variants"]}
+               | {(f"{cfg['lme_default_variant']}.jsonl", r["id"]) for r in default})
+    planned = {(p, i) for p, i in planned if i not in done[p]}
     ingested = {d for d in (os.listdir(store_root) if os.path.isdir(store_root) else [])
                 if os.path.exists(os.path.join(store_root, d, "INGEST_DONE"))}
     miss, hit, out, usd = estimate(cfg, fc, lme, default, ingested)
@@ -504,14 +687,22 @@ def main():
     print(f"fc: {[r['source'] for r in fc]} x {cfg['fc_conditions']}")
     print(f"lme: {len(lme)} questions {cfg['lme_types']} x {cfg['lme_variants']} | "
           f"default-usage run on {len(default)} of them as {cfg['lme_default_variant']}")
+    print(f"answers to produce: {len(planned)}")
     print(f"estimate (remaining work only): ~{miss/1e6:.2f}M uncached + ~{hit/1e6:.2f}M cached "
           f"input tokens, ~{out/1e6:.2f}M output tokens, ~${usd:.2f} at peak prices (budget cap ${cfg['budget_usd']:.2f})")
-    if args.dry_run:
+    if args.dry_run or not planned:
         return
     if not key or key.startswith("PASTE"):
         sys.exit("No API key: put it in pipeline/config.local.json or set the environment variable.")
     if usd > cfg["budget_usd"]:
         sys.exit("Estimated cost exceeds budget_usd; raise it in pipeline/config.local.json if intended.")
+    write_manifest(out_dir, {
+        "run": cfg["_run"], "event": "start", "argv": sys.argv[1:], "config_file": cfg_name,
+        "settings": {k: v for k, v in cfg.items() if k not in ("api_key", "_fp", "_run")},
+        "fingerprints": {p: cfg["_fp"][p] for p in out_files}, "inputs_sha256": inputs_sha,
+        "python": sys.version.split()[0], "platform": platform.platform(), "git_commit": git_commit(),
+        "packages": {p: pkg_version(p) for p in ("mem0ai", "openai", "fastembed", "qdrant-client", "onnxruntime")},
+        "planned_answers": len(planned)})
 
     be_gentle(cfg)
     patch_mem0()
@@ -559,6 +750,14 @@ def main():
                     res = f.result()
                 except Exception as e:
                     log(f"ERROR in {kind} job: {str(e)[:200]}")
+                    if kind == "ingest":                       # record the failure for every question it blocks
+                        row, store_kind = r
+                        for c in [c for c in mem0_conds if FC_MEM0_STORE[c] == store_kind]:
+                            for q in row["questions"]:
+                                if q["id"] not in done[f"fc_{c}.jsonl"]:
+                                    append_jsonl(os.path.join(out_dir, f"fc_{c}.jsonl"),
+                                                 new_rec(cfg, f"fc_{c}.jsonl", id=q["id"], source=row["source"],
+                                                         cond=c, error="ingest failed: " + str(e)[:280]))
                     continue
                 if kind == "ingest":                           # then answer that store's questions
                     row, store_kind = r
@@ -574,15 +773,33 @@ def main():
                 status = "ERROR " + res["error"][:100] if res.get("error") else "ok"
                 if kind in ("lme", "lme0") or res.get("error"):
                     log(f"[{kind} {res.get('cond')}] {label}: {status} | spent ~${meter.spent:.3f}")
-    latest = {}                                                # last record per (file, id) decides its status
-    for p in out_files:
-        for x in load_jsonl(os.path.join(out_dir, p)):
-            latest[(p, x["id"])] = x
-    n_err = sum(1 for x in latest.values() if x.get("error"))
-    print(f"done in {(time.time()-t0)/60:.1f} min | {meter.calls} API calls | spent ~${meter.spent:.3f}"
-          + (f" | {n_err} error rows (re-run to retry them)" if n_err else ""))
+    sys.exit(finish(cfg, out_dir, out_files, planned, meter, t0))
+
+
+def run_status(cfg, out_dir, out_files, planned):
+    """Compare the plan with what this run wrote: ok, failed, or not run at all."""
+    last = {p: latest_by_id(os.path.join(out_dir, p)) for p in out_files}
+    counts = collections.Counter()
+    for p, i in planned:
+        x = last[p].get(i)
+        counts["not run" if not x or x.get("run") != cfg["_run"] else "failed" if x.get("error") else "ok"] += 1
+    return counts
+
+
+def finish(cfg, out_dir, out_files, planned, meter, t0):
+    counts = run_status(cfg, out_dir, out_files, planned)
+    complete = counts["ok"] == len(planned)
+    write_manifest(out_dir, {"run": cfg["_run"], "event": "end", "ok": counts["ok"], "failed": counts["failed"],
+                             "not_run": counts["not run"], "api_calls": meter.calls, "spent_usd": round(meter.spent, 4)})
+    print(f"{'done' if complete else 'INCOMPLETE'} in {(time.time()-t0)/60:.1f} min | {meter.calls} API calls | "
+          f"spent ~${meter.spent:.3f} | planned {len(planned)}: {counts['ok']} ok, {counts['failed']} failed, "
+          f"{counts['not run']} not run")
     if STOP.is_set():
-        print("Stopped early (budget cap or key/balance problem). Re-run to resume.")
+        print("Stopped early (budget cap or key/balance problem).")
+    if not complete:
+        print("Re-run the same command to retry the failed and missing items. Failed runs are not wrong answers: "
+              "do not grade until this command reports done.")
+    return 0 if complete else 1
 
 
 if __name__ == "__main__":

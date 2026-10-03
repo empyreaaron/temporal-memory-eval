@@ -1,5 +1,5 @@
 step,from,to,fixed,broken,net,verdict
 write-time dates,M0,Mnd,10,5,5,no clear effect
-chronological order,Mnd,Mord,11,2,9,clear effect
+chronological order (by day),Mnd,Mord,11,2,9,clear effect
 show dates,Mord,M,2,2,0,no clear effect
 whole intervention,M0,M,17,3,14,clear effect

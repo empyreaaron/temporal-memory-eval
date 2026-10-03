@@ -4,16 +4,21 @@ No LLM call is made: memories are stored with infer=False (raw text, no extracti
 real date as created_at metadata. We then search and print the ranking. If ranking used recency, the
 newer fact would come first; it is ordered by relevance score only.
 
-Run (tested with mem0ai 2.1.0; local embeddings, no API key needed):
-    pip install mem0ai fastembed
+Run (tested with mem0ai 2.1.0 and 2.2.1; local embeddings, no API key needed):
+    pip install mem0ai==2.1.0 fastembed==0.8.0      # or: pip install -r requirements.txt
     python repro_ranking.py
+Scores are printed to 6 decimals: two scores that look equal at 3 decimals are usually not tied.
+The memories are stored with infer=False, so this checks search ranking only, not mem0's extraction step.
 """
-import logging, os, tempfile
+import logging, os, platform, sys, tempfile
+from importlib import metadata
 
 os.environ.setdefault("MEM0_TELEMETRY", "False")
 from mem0 import Memory
 
 logging.getLogger("mem0").setLevel(logging.ERROR)
+print(f"mem0ai {metadata.version('mem0ai')}, fastembed {metadata.version('fastembed')}, "
+      f"Python {platform.python_version()}, embedder BAAI/bge-small-en-v1.5")
 
 CASES = [  # (question, [(date, text), ...]); the last entry is the newest fact
     ("Where do I live?",
@@ -43,9 +48,11 @@ for i, (question, facts) in enumerate(CASES):
         m.add([{"role": "user", "content": text}], user_id=uid, infer=False,
               metadata={"created_at": f"{date}T09:00:00"})
     hits = m.search(question, filters={"user_id": uid}, top_k=10)["results"]
+    if len(hits) != len(facts):
+        sys.exit(f"expected {len(facts)} results for {question!r}, got {len(hits)}: the repro did not run as intended")
     print(f"\nQ: {question}")
     for rank, h in enumerate(hits, 1):
-        print(f"  #{rank}  score={h['score']:.3f}  created_at={(h.get('created_at') or '')[:10]}  {h['memory']}")
+        print(f"  #{rank}  score={h['score']:.6f}  created_at={(h.get('created_at') or '')[:10]}  {h['memory']}")
     newest = facts[-1][1]
     newest_first += hits[0]["memory"] == newest
 print(f"\nNewest fact ranked first in {newest_first}/{len(CASES)} cases. "
