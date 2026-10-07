@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-08: M0_wo answered three times
+
+No published score changed. M0_wo was answered twice more on the same frozen stores, retrieved memories, prompt and settings (`M0_wo_r2`, `M0_wo_r3`), as M was: 68 / 68 / 67, mean 67.7, spread 1. Each run separately is a clear effect against M0 (net +14, +14, +13). The store files were hashed before the repeats and checked afterwards; they were unchanged. New rows in `longmemeval_ku76_summary.csv`, `longmemeval_per_question.csv` and `answers_longmemeval.jsonl`; every earlier row is unchanged. The scripts and `--default-variant` know the two repeat names.
+
 ## 2026-10-07: supplementary runs and retrieval coverage
 
 No published score changed. Three answer-only variants were added on the 76 knowledge-update questions, with their decision rule written down before the run; see "Supplementary runs" in the README.

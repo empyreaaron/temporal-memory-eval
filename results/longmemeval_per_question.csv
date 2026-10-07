@@ -8,6 +8,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 01493427,knowledge-update,False,Mord_ts,0
 01493427,knowledge-update,False,M_ts,1
 01493427,knowledge-update,False,M0_wo,0
+01493427,knowledge-update,False,M0_wo_r2,0
+01493427,knowledge-update,False,M0_wo_r3,1
 01493427,knowledge-update,False,F,1
 01493427,knowledge-update,False,R,1
 01493427,knowledge-update,False,O,1
@@ -20,6 +22,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 031748ae,knowledge-update,False,Mord_ts,1
 031748ae,knowledge-update,False,M_ts,1
 031748ae,knowledge-update,False,M0_wo,1
+031748ae,knowledge-update,False,M0_wo_r2,1
+031748ae,knowledge-update,False,M0_wo_r3,1
 031748ae,knowledge-update,False,F,1
 031748ae,knowledge-update,False,R,1
 031748ae,knowledge-update,False,O,1
@@ -32,6 +36,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 031748ae_abs,knowledge-update,False,Mord_ts,0
 031748ae_abs,knowledge-update,False,M_ts,0
 031748ae_abs,knowledge-update,False,M0_wo,0
+031748ae_abs,knowledge-update,False,M0_wo_r2,0
+031748ae_abs,knowledge-update,False,M0_wo_r3,0
 031748ae_abs,knowledge-update,False,F,0
 031748ae_abs,knowledge-update,False,R,1
 031748ae_abs,knowledge-update,False,O,1
@@ -44,6 +50,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 06db6396,knowledge-update,False,Mord_ts,1
 06db6396,knowledge-update,False,M_ts,1
 06db6396,knowledge-update,False,M0_wo,1
+06db6396,knowledge-update,False,M0_wo_r2,1
+06db6396,knowledge-update,False,M0_wo_r3,1
 06db6396,knowledge-update,False,F,1
 06db6396,knowledge-update,False,R,1
 06db6396,knowledge-update,False,O,1
@@ -56,6 +64,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 07741c44,knowledge-update,True,Mord_ts,1
 07741c44,knowledge-update,True,M_ts,1
 07741c44,knowledge-update,True,M0_wo,1
+07741c44,knowledge-update,True,M0_wo_r2,1
+07741c44,knowledge-update,True,M0_wo_r3,1
 07741c44,knowledge-update,True,F,1
 07741c44,knowledge-update,True,R,1
 07741c44,knowledge-update,True,O,1
@@ -68,6 +78,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 07741c45,knowledge-update,False,Mord_ts,0
 07741c45,knowledge-update,False,M_ts,0
 07741c45,knowledge-update,False,M0_wo,0
+07741c45,knowledge-update,False,M0_wo_r2,0
+07741c45,knowledge-update,False,M0_wo_r3,0
 07741c45,knowledge-update,False,F,0
 07741c45,knowledge-update,False,R,0
 07741c45,knowledge-update,False,O,0
@@ -80,6 +92,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 08e075c7,knowledge-update,False,Mord_ts,1
 08e075c7,knowledge-update,False,M_ts,1
 08e075c7,knowledge-update,False,M0_wo,1
+08e075c7,knowledge-update,False,M0_wo_r2,1
+08e075c7,knowledge-update,False,M0_wo_r3,1
 08e075c7,knowledge-update,False,F,1
 08e075c7,knowledge-update,False,R,1
 08e075c7,knowledge-update,False,O,1
@@ -92,6 +106,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 0977f2af,knowledge-update,True,Mord_ts,1
 0977f2af,knowledge-update,True,M_ts,1
 0977f2af,knowledge-update,True,M0_wo,1
+0977f2af,knowledge-update,True,M0_wo_r2,1
+0977f2af,knowledge-update,True,M0_wo_r3,1
 0977f2af,knowledge-update,True,F,1
 0977f2af,knowledge-update,True,R,0
 0977f2af,knowledge-update,True,O,1
@@ -104,6 +120,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 0ddfec37,knowledge-update,False,Mord_ts,1
 0ddfec37,knowledge-update,False,M_ts,1
 0ddfec37,knowledge-update,False,M0_wo,1
+0ddfec37,knowledge-update,False,M0_wo_r2,1
+0ddfec37,knowledge-update,False,M0_wo_r3,1
 0ddfec37,knowledge-update,False,F,1
 0ddfec37,knowledge-update,False,R,1
 0ddfec37,knowledge-update,False,O,1
@@ -116,6 +134,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 0ddfec37_abs,knowledge-update,False,Mord_ts,1
 0ddfec37_abs,knowledge-update,False,M_ts,1
 0ddfec37_abs,knowledge-update,False,M0_wo,1
+0ddfec37_abs,knowledge-update,False,M0_wo_r2,1
+0ddfec37_abs,knowledge-update,False,M0_wo_r3,1
 0ddfec37_abs,knowledge-update,False,F,1
 0ddfec37_abs,knowledge-update,False,R,1
 0ddfec37_abs,knowledge-update,False,O,1
@@ -128,6 +148,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 0e4e4c46,knowledge-update,False,Mord_ts,1
 0e4e4c46,knowledge-update,False,M_ts,1
 0e4e4c46,knowledge-update,False,M0_wo,1
+0e4e4c46,knowledge-update,False,M0_wo_r2,1
+0e4e4c46,knowledge-update,False,M0_wo_r3,1
 0e4e4c46,knowledge-update,False,F,1
 0e4e4c46,knowledge-update,False,R,1
 0e4e4c46,knowledge-update,False,O,1
@@ -140,6 +162,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 0f05491a,knowledge-update,False,Mord_ts,1
 0f05491a,knowledge-update,False,M_ts,1
 0f05491a,knowledge-update,False,M0_wo,1
+0f05491a,knowledge-update,False,M0_wo_r2,1
+0f05491a,knowledge-update,False,M0_wo_r3,1
 0f05491a,knowledge-update,False,F,1
 0f05491a,knowledge-update,False,R,1
 0f05491a,knowledge-update,False,O,1
@@ -152,6 +176,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 10e09553,knowledge-update,True,Mord_ts,1
 10e09553,knowledge-update,True,M_ts,1
 10e09553,knowledge-update,True,M0_wo,1
+10e09553,knowledge-update,True,M0_wo_r2,1
+10e09553,knowledge-update,True,M0_wo_r3,1
 10e09553,knowledge-update,True,F,1
 10e09553,knowledge-update,True,R,1
 10e09553,knowledge-update,True,O,1
@@ -164,6 +190,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 18bc8abd,knowledge-update,False,Mord_ts,1
 18bc8abd,knowledge-update,False,M_ts,1
 18bc8abd,knowledge-update,False,M0_wo,1
+18bc8abd,knowledge-update,False,M0_wo_r2,1
+18bc8abd,knowledge-update,False,M0_wo_r3,1
 18bc8abd,knowledge-update,False,F,1
 18bc8abd,knowledge-update,False,R,1
 18bc8abd,knowledge-update,False,O,1
@@ -176,6 +204,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 1cea1afa,knowledge-update,False,Mord_ts,1
 1cea1afa,knowledge-update,False,M_ts,1
 1cea1afa,knowledge-update,False,M0_wo,1
+1cea1afa,knowledge-update,False,M0_wo_r2,1
+1cea1afa,knowledge-update,False,M0_wo_r3,0
 1cea1afa,knowledge-update,False,F,1
 1cea1afa,knowledge-update,False,R,1
 1cea1afa,knowledge-update,False,O,1
@@ -188,6 +218,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 2133c1b5,knowledge-update,False,Mord_ts,1
 2133c1b5,knowledge-update,False,M_ts,1
 2133c1b5,knowledge-update,False,M0_wo,1
+2133c1b5,knowledge-update,False,M0_wo_r2,0
+2133c1b5,knowledge-update,False,M0_wo_r3,0
 2133c1b5,knowledge-update,False,F,0
 2133c1b5,knowledge-update,False,R,0
 2133c1b5,knowledge-update,False,O,1
@@ -200,6 +232,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 2133c1b5_abs,knowledge-update,False,Mord_ts,1
 2133c1b5_abs,knowledge-update,False,M_ts,1
 2133c1b5_abs,knowledge-update,False,M0_wo,1
+2133c1b5_abs,knowledge-update,False,M0_wo_r2,1
+2133c1b5_abs,knowledge-update,False,M0_wo_r3,1
 2133c1b5_abs,knowledge-update,False,F,1
 2133c1b5_abs,knowledge-update,False,R,1
 2133c1b5_abs,knowledge-update,False,O,1
@@ -212,6 +246,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 22d2cb42,knowledge-update,False,Mord_ts,1
 22d2cb42,knowledge-update,False,M_ts,1
 22d2cb42,knowledge-update,False,M0_wo,1
+22d2cb42,knowledge-update,False,M0_wo_r2,1
+22d2cb42,knowledge-update,False,M0_wo_r3,1
 22d2cb42,knowledge-update,False,F,1
 22d2cb42,knowledge-update,False,R,1
 22d2cb42,knowledge-update,False,O,1
@@ -224,6 +260,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 2698e78f,knowledge-update,False,Mord_ts,1
 2698e78f,knowledge-update,False,M_ts,1
 2698e78f,knowledge-update,False,M0_wo,1
+2698e78f,knowledge-update,False,M0_wo_r2,1
+2698e78f,knowledge-update,False,M0_wo_r3,1
 2698e78f,knowledge-update,False,F,1
 2698e78f,knowledge-update,False,R,1
 2698e78f,knowledge-update,False,O,1
@@ -236,6 +274,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 2698e78f_abs,knowledge-update,False,Mord_ts,1
 2698e78f_abs,knowledge-update,False,M_ts,1
 2698e78f_abs,knowledge-update,False,M0_wo,1
+2698e78f_abs,knowledge-update,False,M0_wo_r2,1
+2698e78f_abs,knowledge-update,False,M0_wo_r3,1
 2698e78f_abs,knowledge-update,False,F,1
 2698e78f_abs,knowledge-update,False,R,1
 2698e78f_abs,knowledge-update,False,O,1
@@ -248,6 +288,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 26bdc477,knowledge-update,False,Mord_ts,1
 26bdc477,knowledge-update,False,M_ts,1
 26bdc477,knowledge-update,False,M0_wo,1
+26bdc477,knowledge-update,False,M0_wo_r2,1
+26bdc477,knowledge-update,False,M0_wo_r3,1
 26bdc477,knowledge-update,False,F,1
 26bdc477,knowledge-update,False,R,1
 26bdc477,knowledge-update,False,O,1
@@ -260,6 +302,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 3ba21379,knowledge-update,False,Mord_ts,1
 3ba21379,knowledge-update,False,M_ts,1
 3ba21379,knowledge-update,False,M0_wo,1
+3ba21379,knowledge-update,False,M0_wo_r2,1
+3ba21379,knowledge-update,False,M0_wo_r3,1
 3ba21379,knowledge-update,False,F,1
 3ba21379,knowledge-update,False,R,0
 3ba21379,knowledge-update,False,O,1
@@ -272,6 +316,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 41698283,knowledge-update,False,Mord_ts,1
 41698283,knowledge-update,False,M_ts,1
 41698283,knowledge-update,False,M0_wo,1
+41698283,knowledge-update,False,M0_wo_r2,1
+41698283,knowledge-update,False,M0_wo_r3,1
 41698283,knowledge-update,False,F,1
 41698283,knowledge-update,False,R,1
 41698283,knowledge-update,False,O,1
@@ -284,6 +330,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 42ec0761,knowledge-update,False,Mord_ts,1
 42ec0761,knowledge-update,False,M_ts,1
 42ec0761,knowledge-update,False,M0_wo,1
+42ec0761,knowledge-update,False,M0_wo_r2,1
+42ec0761,knowledge-update,False,M0_wo_r3,1
 42ec0761,knowledge-update,False,F,1
 42ec0761,knowledge-update,False,R,1
 42ec0761,knowledge-update,False,O,1
@@ -296,6 +344,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 45dc21b6,knowledge-update,False,Mord_ts,1
 45dc21b6,knowledge-update,False,M_ts,1
 45dc21b6,knowledge-update,False,M0_wo,1
+45dc21b6,knowledge-update,False,M0_wo_r2,1
+45dc21b6,knowledge-update,False,M0_wo_r3,1
 45dc21b6,knowledge-update,False,F,1
 45dc21b6,knowledge-update,False,R,1
 45dc21b6,knowledge-update,False,O,1
@@ -308,6 +358,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 4b24c848,knowledge-update,False,Mord_ts,1
 4b24c848,knowledge-update,False,M_ts,1
 4b24c848,knowledge-update,False,M0_wo,1
+4b24c848,knowledge-update,False,M0_wo_r2,1
+4b24c848,knowledge-update,False,M0_wo_r3,1
 4b24c848,knowledge-update,False,F,1
 4b24c848,knowledge-update,False,R,1
 4b24c848,knowledge-update,False,O,1
@@ -320,6 +372,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 4d6b87c8,knowledge-update,False,Mord_ts,1
 4d6b87c8,knowledge-update,False,M_ts,1
 4d6b87c8,knowledge-update,False,M0_wo,1
+4d6b87c8,knowledge-update,False,M0_wo_r2,1
+4d6b87c8,knowledge-update,False,M0_wo_r3,1
 4d6b87c8,knowledge-update,False,F,1
 4d6b87c8,knowledge-update,False,R,1
 4d6b87c8,knowledge-update,False,O,1
@@ -332,6 +386,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 50635ada,knowledge-update,True,Mord_ts,1
 50635ada,knowledge-update,True,M_ts,1
 50635ada,knowledge-update,True,M0_wo,1
+50635ada,knowledge-update,True,M0_wo_r2,1
+50635ada,knowledge-update,True,M0_wo_r3,1
 50635ada,knowledge-update,True,F,1
 50635ada,knowledge-update,True,R,1
 50635ada,knowledge-update,True,O,1
@@ -344,6 +400,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 5831f84d,knowledge-update,False,Mord_ts,1
 5831f84d,knowledge-update,False,M_ts,1
 5831f84d,knowledge-update,False,M0_wo,1
+5831f84d,knowledge-update,False,M0_wo_r2,1
+5831f84d,knowledge-update,False,M0_wo_r3,1
 5831f84d,knowledge-update,False,F,1
 5831f84d,knowledge-update,False,R,1
 5831f84d,knowledge-update,False,O,1
@@ -356,6 +414,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 59524333,knowledge-update,False,Mord_ts,0
 59524333,knowledge-update,False,M_ts,0
 59524333,knowledge-update,False,M0_wo,0
+59524333,knowledge-update,False,M0_wo_r2,0
+59524333,knowledge-update,False,M0_wo_r3,0
 59524333,knowledge-update,False,F,1
 59524333,knowledge-update,False,R,1
 59524333,knowledge-update,False,O,1
@@ -368,6 +428,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 5a4f22c0,knowledge-update,False,Mord_ts,1
 5a4f22c0,knowledge-update,False,M_ts,1
 5a4f22c0,knowledge-update,False,M0_wo,1
+5a4f22c0,knowledge-update,False,M0_wo_r2,1
+5a4f22c0,knowledge-update,False,M0_wo_r3,1
 5a4f22c0,knowledge-update,False,F,1
 5a4f22c0,knowledge-update,False,R,1
 5a4f22c0,knowledge-update,False,O,1
@@ -380,6 +442,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 5c40ec5b,knowledge-update,False,Mord_ts,1
 5c40ec5b,knowledge-update,False,M_ts,1
 5c40ec5b,knowledge-update,False,M0_wo,1
+5c40ec5b,knowledge-update,False,M0_wo_r2,1
+5c40ec5b,knowledge-update,False,M0_wo_r3,1
 5c40ec5b,knowledge-update,False,F,1
 5c40ec5b,knowledge-update,False,R,1
 5c40ec5b,knowledge-update,False,O,1
@@ -392,6 +456,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 603deb26,knowledge-update,False,Mord_ts,1
 603deb26,knowledge-update,False,M_ts,1
 603deb26,knowledge-update,False,M0_wo,1
+603deb26,knowledge-update,False,M0_wo_r2,1
+603deb26,knowledge-update,False,M0_wo_r3,1
 603deb26,knowledge-update,False,F,1
 603deb26,knowledge-update,False,R,1
 603deb26,knowledge-update,False,O,1
@@ -404,6 +470,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 6071bd76,knowledge-update,True,Mord_ts,1
 6071bd76,knowledge-update,True,M_ts,1
 6071bd76,knowledge-update,True,M0_wo,1
+6071bd76,knowledge-update,True,M0_wo_r2,1
+6071bd76,knowledge-update,True,M0_wo_r3,1
 6071bd76,knowledge-update,True,F,1
 6071bd76,knowledge-update,True,R,1
 6071bd76,knowledge-update,True,O,1
@@ -416,6 +484,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 618f13b2,knowledge-update,False,Mord_ts,0
 618f13b2,knowledge-update,False,M_ts,0
 618f13b2,knowledge-update,False,M0_wo,0
+618f13b2,knowledge-update,False,M0_wo_r2,0
+618f13b2,knowledge-update,False,M0_wo_r3,0
 618f13b2,knowledge-update,False,F,0
 618f13b2,knowledge-update,False,R,0
 618f13b2,knowledge-update,False,O,1
@@ -428,6 +498,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 69fee5aa,knowledge-update,False,Mord_ts,1
 69fee5aa,knowledge-update,False,M_ts,1
 69fee5aa,knowledge-update,False,M0_wo,1
+69fee5aa,knowledge-update,False,M0_wo_r2,1
+69fee5aa,knowledge-update,False,M0_wo_r3,1
 69fee5aa,knowledge-update,False,F,1
 69fee5aa,knowledge-update,False,R,1
 69fee5aa,knowledge-update,False,O,1
@@ -440,6 +512,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 6a1eabeb,knowledge-update,False,Mord_ts,0
 6a1eabeb,knowledge-update,False,M_ts,0
 6a1eabeb,knowledge-update,False,M0_wo,0
+6a1eabeb,knowledge-update,False,M0_wo_r2,0
+6a1eabeb,knowledge-update,False,M0_wo_r3,0
 6a1eabeb,knowledge-update,False,F,1
 6a1eabeb,knowledge-update,False,R,1
 6a1eabeb,knowledge-update,False,O,0
@@ -452,6 +526,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 6a27ffc2,knowledge-update,False,Mord_ts,1
 6a27ffc2,knowledge-update,False,M_ts,1
 6a27ffc2,knowledge-update,False,M0_wo,1
+6a27ffc2,knowledge-update,False,M0_wo_r2,1
+6a27ffc2,knowledge-update,False,M0_wo_r3,1
 6a27ffc2,knowledge-update,False,F,1
 6a27ffc2,knowledge-update,False,R,1
 6a27ffc2,knowledge-update,False,O,1
@@ -464,6 +540,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 6aeb4375,knowledge-update,False,Mord_ts,1
 6aeb4375,knowledge-update,False,M_ts,1
 6aeb4375,knowledge-update,False,M0_wo,1
+6aeb4375,knowledge-update,False,M0_wo_r2,1
+6aeb4375,knowledge-update,False,M0_wo_r3,1
 6aeb4375,knowledge-update,False,F,1
 6aeb4375,knowledge-update,False,R,1
 6aeb4375,knowledge-update,False,O,1
@@ -476,6 +554,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 6aeb4375_abs,knowledge-update,False,Mord_ts,1
 6aeb4375_abs,knowledge-update,False,M_ts,1
 6aeb4375_abs,knowledge-update,False,M0_wo,1
+6aeb4375_abs,knowledge-update,False,M0_wo_r2,1
+6aeb4375_abs,knowledge-update,False,M0_wo_r3,1
 6aeb4375_abs,knowledge-update,False,F,1
 6aeb4375_abs,knowledge-update,False,R,1
 6aeb4375_abs,knowledge-update,False,O,1
@@ -488,6 +568,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 71315a70,knowledge-update,False,Mord_ts,1
 71315a70,knowledge-update,False,M_ts,1
 71315a70,knowledge-update,False,M0_wo,1
+71315a70,knowledge-update,False,M0_wo_r2,1
+71315a70,knowledge-update,False,M0_wo_r3,1
 71315a70,knowledge-update,False,F,1
 71315a70,knowledge-update,False,R,1
 71315a70,knowledge-update,False,O,1
@@ -500,6 +582,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 72e3ee87,knowledge-update,False,Mord_ts,1
 72e3ee87,knowledge-update,False,M_ts,1
 72e3ee87,knowledge-update,False,M0_wo,1
+72e3ee87,knowledge-update,False,M0_wo_r2,1
+72e3ee87,knowledge-update,False,M0_wo_r3,1
 72e3ee87,knowledge-update,False,F,1
 72e3ee87,knowledge-update,False,R,1
 72e3ee87,knowledge-update,False,O,1
@@ -512,6 +596,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 7401057b,knowledge-update,False,Mord_ts,1
 7401057b,knowledge-update,False,M_ts,1
 7401057b,knowledge-update,False,M0_wo,1
+7401057b,knowledge-update,False,M0_wo_r2,1
+7401057b,knowledge-update,False,M0_wo_r3,1
 7401057b,knowledge-update,False,F,1
 7401057b,knowledge-update,False,R,1
 7401057b,knowledge-update,False,O,1
@@ -524,6 +610,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 7a87bd0c,knowledge-update,False,Mord_ts,1
 7a87bd0c,knowledge-update,False,M_ts,1
 7a87bd0c,knowledge-update,False,M0_wo,1
+7a87bd0c,knowledge-update,False,M0_wo_r2,1
+7a87bd0c,knowledge-update,False,M0_wo_r3,1
 7a87bd0c,knowledge-update,False,F,1
 7a87bd0c,knowledge-update,False,R,1
 7a87bd0c,knowledge-update,False,O,1
@@ -536,6 +624,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 7e974930,knowledge-update,False,Mord_ts,1
 7e974930,knowledge-update,False,M_ts,1
 7e974930,knowledge-update,False,M0_wo,1
+7e974930,knowledge-update,False,M0_wo_r2,1
+7e974930,knowledge-update,False,M0_wo_r3,1
 7e974930,knowledge-update,False,F,1
 7e974930,knowledge-update,False,R,1
 7e974930,knowledge-update,False,O,1
@@ -548,6 +638,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 852ce960,knowledge-update,False,Mord_ts,0
 852ce960,knowledge-update,False,M_ts,0
 852ce960,knowledge-update,False,M0_wo,0
+852ce960,knowledge-update,False,M0_wo_r2,0
+852ce960,knowledge-update,False,M0_wo_r3,0
 852ce960,knowledge-update,False,F,0
 852ce960,knowledge-update,False,R,0
 852ce960,knowledge-update,False,O,0
@@ -560,6 +652,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 89941a93,knowledge-update,False,Mord_ts,1
 89941a93,knowledge-update,False,M_ts,1
 89941a93,knowledge-update,False,M0_wo,1
+89941a93,knowledge-update,False,M0_wo_r2,1
+89941a93,knowledge-update,False,M0_wo_r3,1
 89941a93,knowledge-update,False,F,1
 89941a93,knowledge-update,False,R,1
 89941a93,knowledge-update,False,O,1
@@ -572,6 +666,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 89941a94,knowledge-update,True,Mord_ts,1
 89941a94,knowledge-update,True,M_ts,1
 89941a94,knowledge-update,True,M0_wo,1
+89941a94,knowledge-update,True,M0_wo_r2,1
+89941a94,knowledge-update,True,M0_wo_r3,1
 89941a94,knowledge-update,True,F,1
 89941a94,knowledge-update,True,R,1
 89941a94,knowledge-update,True,O,1
@@ -584,6 +680,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 8fb83627,knowledge-update,False,Mord_ts,1
 8fb83627,knowledge-update,False,M_ts,1
 8fb83627,knowledge-update,False,M0_wo,1
+8fb83627,knowledge-update,False,M0_wo_r2,1
+8fb83627,knowledge-update,False,M0_wo_r3,1
 8fb83627,knowledge-update,False,F,1
 8fb83627,knowledge-update,False,R,1
 8fb83627,knowledge-update,False,O,1
@@ -596,6 +694,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 945e3d21,knowledge-update,False,Mord_ts,1
 945e3d21,knowledge-update,False,M_ts,1
 945e3d21,knowledge-update,False,M0_wo,1
+945e3d21,knowledge-update,False,M0_wo_r2,1
+945e3d21,knowledge-update,False,M0_wo_r3,1
 945e3d21,knowledge-update,False,F,1
 945e3d21,knowledge-update,False,R,1
 945e3d21,knowledge-update,False,O,1
@@ -608,6 +708,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 9bbe84a2,knowledge-update,True,Mord_ts,1
 9bbe84a2,knowledge-update,True,M_ts,1
 9bbe84a2,knowledge-update,True,M0_wo,1
+9bbe84a2,knowledge-update,True,M0_wo_r2,1
+9bbe84a2,knowledge-update,True,M0_wo_r3,1
 9bbe84a2,knowledge-update,True,F,1
 9bbe84a2,knowledge-update,True,R,1
 9bbe84a2,knowledge-update,True,O,1
@@ -620,6 +722,8 @@ question_id,question_type,asks_old_value_or_change,condition,correct
 9ea5eabc,knowledge-update,False,Mord_ts,1
 9ea5eabc,knowledge-update,False,M_ts,1
 9ea5eabc,knowledge-update,False,M0_wo,1
+9ea5eabc,knowledge-update,False,M0_wo_r2,1
+9ea5eabc,knowledge-update,False,M0_wo_r3,1
 9ea5eabc,knowledge-update,False,F,1
 9ea5eabc,knowledge-update,False,R,1
 9ea5eabc,knowledge-update,False,O,1
@@ -632,6 +736,8 @@ a1eacc2a,knowledge-update,False,M_r3,1
 a1eacc2a,knowledge-update,False,Mord_ts,1
 a1eacc2a,knowledge-update,False,M_ts,1
 a1eacc2a,knowledge-update,False,M0_wo,1
+a1eacc2a,knowledge-update,False,M0_wo_r2,1
+a1eacc2a,knowledge-update,False,M0_wo_r3,1
 a1eacc2a,knowledge-update,False,F,1
 a1eacc2a,knowledge-update,False,R,1
 a1eacc2a,knowledge-update,False,O,1
@@ -644,6 +750,8 @@ a2f3aa27,knowledge-update,False,M_r3,0
 a2f3aa27,knowledge-update,False,Mord_ts,0
 a2f3aa27,knowledge-update,False,M_ts,0
 a2f3aa27,knowledge-update,False,M0_wo,1
+a2f3aa27,knowledge-update,False,M0_wo_r2,1
+a2f3aa27,knowledge-update,False,M0_wo_r3,1
 a2f3aa27,knowledge-update,False,F,0
 a2f3aa27,knowledge-update,False,R,0
 a2f3aa27,knowledge-update,False,O,0
@@ -656,6 +764,8 @@ affe2881,knowledge-update,False,M_r3,1
 affe2881,knowledge-update,False,Mord_ts,1
 affe2881,knowledge-update,False,M_ts,1
 affe2881,knowledge-update,False,M0_wo,1
+affe2881,knowledge-update,False,M0_wo_r2,1
+affe2881,knowledge-update,False,M0_wo_r3,1
 affe2881,knowledge-update,False,F,1
 affe2881,knowledge-update,False,R,1
 affe2881,knowledge-update,False,O,1
@@ -668,6 +778,8 @@ b01defab,knowledge-update,False,M_r3,1
 b01defab,knowledge-update,False,Mord_ts,1
 b01defab,knowledge-update,False,M_ts,1
 b01defab,knowledge-update,False,M0_wo,1
+b01defab,knowledge-update,False,M0_wo_r2,1
+b01defab,knowledge-update,False,M0_wo_r3,1
 b01defab,knowledge-update,False,F,1
 b01defab,knowledge-update,False,R,1
 b01defab,knowledge-update,False,O,1
@@ -680,6 +792,8 @@ b6019101,knowledge-update,False,M_r3,1
 b6019101,knowledge-update,False,Mord_ts,1
 b6019101,knowledge-update,False,M_ts,1
 b6019101,knowledge-update,False,M0_wo,1
+b6019101,knowledge-update,False,M0_wo_r2,1
+b6019101,knowledge-update,False,M0_wo_r3,1
 b6019101,knowledge-update,False,F,1
 b6019101,knowledge-update,False,R,1
 b6019101,knowledge-update,False,O,1
@@ -692,6 +806,8 @@ ba61f0b9,knowledge-update,False,M_r3,1
 ba61f0b9,knowledge-update,False,Mord_ts,1
 ba61f0b9,knowledge-update,False,M_ts,1
 ba61f0b9,knowledge-update,False,M0_wo,0
+ba61f0b9,knowledge-update,False,M0_wo_r2,1
+ba61f0b9,knowledge-update,False,M0_wo_r3,0
 ba61f0b9,knowledge-update,False,F,0
 ba61f0b9,knowledge-update,False,R,0
 ba61f0b9,knowledge-update,False,O,1
@@ -704,6 +820,8 @@ c4ea545c,knowledge-update,True,M_r3,1
 c4ea545c,knowledge-update,True,Mord_ts,1
 c4ea545c,knowledge-update,True,M_ts,1
 c4ea545c,knowledge-update,True,M0_wo,1
+c4ea545c,knowledge-update,True,M0_wo_r2,1
+c4ea545c,knowledge-update,True,M0_wo_r3,1
 c4ea545c,knowledge-update,True,F,1
 c4ea545c,knowledge-update,True,R,1
 c4ea545c,knowledge-update,True,O,1
@@ -716,6 +834,8 @@ c6853660,knowledge-update,True,M_r3,1
 c6853660,knowledge-update,True,Mord_ts,1
 c6853660,knowledge-update,True,M_ts,1
 c6853660,knowledge-update,True,M0_wo,1
+c6853660,knowledge-update,True,M0_wo_r2,1
+c6853660,knowledge-update,True,M0_wo_r3,1
 c6853660,knowledge-update,True,F,1
 c6853660,knowledge-update,True,R,1
 c6853660,knowledge-update,True,O,1
@@ -728,6 +848,8 @@ c7dc5443,knowledge-update,False,M_r3,1
 c7dc5443,knowledge-update,False,Mord_ts,1
 c7dc5443,knowledge-update,False,M_ts,1
 c7dc5443,knowledge-update,False,M0_wo,1
+c7dc5443,knowledge-update,False,M0_wo_r2,1
+c7dc5443,knowledge-update,False,M0_wo_r3,1
 c7dc5443,knowledge-update,False,F,1
 c7dc5443,knowledge-update,False,R,1
 c7dc5443,knowledge-update,False,O,1
@@ -740,6 +862,8 @@ cc5ded98,knowledge-update,False,M_r3,1
 cc5ded98,knowledge-update,False,Mord_ts,1
 cc5ded98,knowledge-update,False,M_ts,1
 cc5ded98,knowledge-update,False,M0_wo,1
+cc5ded98,knowledge-update,False,M0_wo_r2,1
+cc5ded98,knowledge-update,False,M0_wo_r3,1
 cc5ded98,knowledge-update,False,F,1
 cc5ded98,knowledge-update,False,R,1
 cc5ded98,knowledge-update,False,O,1
@@ -752,6 +876,8 @@ ce6d2d27,knowledge-update,False,M_r3,1
 ce6d2d27,knowledge-update,False,Mord_ts,1
 ce6d2d27,knowledge-update,False,M_ts,1
 ce6d2d27,knowledge-update,False,M0_wo,1
+ce6d2d27,knowledge-update,False,M0_wo_r2,1
+ce6d2d27,knowledge-update,False,M0_wo_r3,1
 ce6d2d27,knowledge-update,False,F,1
 ce6d2d27,knowledge-update,False,R,1
 ce6d2d27,knowledge-update,False,O,1
@@ -764,6 +890,8 @@ cf22b7bf,knowledge-update,False,M_r3,1
 cf22b7bf,knowledge-update,False,Mord_ts,1
 cf22b7bf,knowledge-update,False,M_ts,1
 cf22b7bf,knowledge-update,False,M0_wo,1
+cf22b7bf,knowledge-update,False,M0_wo_r2,1
+cf22b7bf,knowledge-update,False,M0_wo_r3,1
 cf22b7bf,knowledge-update,False,F,1
 cf22b7bf,knowledge-update,False,R,1
 cf22b7bf,knowledge-update,False,O,1
@@ -776,6 +904,8 @@ d7c942c3,knowledge-update,False,M_r3,1
 d7c942c3,knowledge-update,False,Mord_ts,1
 d7c942c3,knowledge-update,False,M_ts,1
 d7c942c3,knowledge-update,False,M0_wo,1
+d7c942c3,knowledge-update,False,M0_wo_r2,1
+d7c942c3,knowledge-update,False,M0_wo_r3,1
 d7c942c3,knowledge-update,False,F,1
 d7c942c3,knowledge-update,False,R,1
 d7c942c3,knowledge-update,False,O,1
@@ -788,6 +918,8 @@ dad224aa,knowledge-update,False,M_r3,1
 dad224aa,knowledge-update,False,Mord_ts,1
 dad224aa,knowledge-update,False,M_ts,1
 dad224aa,knowledge-update,False,M0_wo,1
+dad224aa,knowledge-update,False,M0_wo_r2,1
+dad224aa,knowledge-update,False,M0_wo_r3,1
 dad224aa,knowledge-update,False,F,0
 dad224aa,knowledge-update,False,R,1
 dad224aa,knowledge-update,False,O,1
@@ -800,6 +932,8 @@ db467c8c,knowledge-update,False,M_r3,1
 db467c8c,knowledge-update,False,Mord_ts,1
 db467c8c,knowledge-update,False,M_ts,1
 db467c8c,knowledge-update,False,M0_wo,1
+db467c8c,knowledge-update,False,M0_wo_r2,1
+db467c8c,knowledge-update,False,M0_wo_r3,1
 db467c8c,knowledge-update,False,F,1
 db467c8c,knowledge-update,False,R,1
 db467c8c,knowledge-update,False,O,1
@@ -812,6 +946,8 @@ dfde3500,knowledge-update,False,M_r3,1
 dfde3500,knowledge-update,False,Mord_ts,1
 dfde3500,knowledge-update,False,M_ts,1
 dfde3500,knowledge-update,False,M0_wo,1
+dfde3500,knowledge-update,False,M0_wo_r2,1
+dfde3500,knowledge-update,False,M0_wo_r3,1
 dfde3500,knowledge-update,False,F,1
 dfde3500,knowledge-update,False,R,1
 dfde3500,knowledge-update,False,O,1
@@ -824,6 +960,8 @@ e493bb7c,knowledge-update,False,M_r3,1
 e493bb7c,knowledge-update,False,Mord_ts,1
 e493bb7c,knowledge-update,False,M_ts,1
 e493bb7c,knowledge-update,False,M0_wo,1
+e493bb7c,knowledge-update,False,M0_wo_r2,1
+e493bb7c,knowledge-update,False,M0_wo_r3,1
 e493bb7c,knowledge-update,False,F,1
 e493bb7c,knowledge-update,False,R,1
 e493bb7c,knowledge-update,False,O,1
@@ -836,6 +974,8 @@ e61a7584,knowledge-update,False,M_r3,1
 e61a7584,knowledge-update,False,Mord_ts,1
 e61a7584,knowledge-update,False,M_ts,1
 e61a7584,knowledge-update,False,M0_wo,1
+e61a7584,knowledge-update,False,M0_wo_r2,1
+e61a7584,knowledge-update,False,M0_wo_r3,1
 e61a7584,knowledge-update,False,F,1
 e61a7584,knowledge-update,False,R,1
 e61a7584,knowledge-update,False,O,1
@@ -848,6 +988,8 @@ e66b632c,knowledge-update,True,M_r3,1
 e66b632c,knowledge-update,True,Mord_ts,1
 e66b632c,knowledge-update,True,M_ts,1
 e66b632c,knowledge-update,True,M0_wo,1
+e66b632c,knowledge-update,True,M0_wo_r2,1
+e66b632c,knowledge-update,True,M0_wo_r3,1
 e66b632c,knowledge-update,True,F,1
 e66b632c,knowledge-update,True,R,1
 e66b632c,knowledge-update,True,O,1
@@ -860,6 +1002,8 @@ eace081b,knowledge-update,False,M_r3,1
 eace081b,knowledge-update,False,Mord_ts,1
 eace081b,knowledge-update,False,M_ts,1
 eace081b,knowledge-update,False,M0_wo,1
+eace081b,knowledge-update,False,M0_wo_r2,1
+eace081b,knowledge-update,False,M0_wo_r3,1
 eace081b,knowledge-update,False,F,1
 eace081b,knowledge-update,False,R,1
 eace081b,knowledge-update,False,O,1
@@ -872,6 +1016,8 @@ ed4ddc30,knowledge-update,False,M_r3,1
 ed4ddc30,knowledge-update,False,Mord_ts,1
 ed4ddc30,knowledge-update,False,M_ts,1
 ed4ddc30,knowledge-update,False,M0_wo,1
+ed4ddc30,knowledge-update,False,M0_wo_r2,1
+ed4ddc30,knowledge-update,False,M0_wo_r3,1
 ed4ddc30,knowledge-update,False,F,1
 ed4ddc30,knowledge-update,False,R,1
 ed4ddc30,knowledge-update,False,O,1
@@ -884,6 +1030,8 @@ f685340e,knowledge-update,True,M_r3,1
 f685340e,knowledge-update,True,Mord_ts,1
 f685340e,knowledge-update,True,M_ts,1
 f685340e,knowledge-update,True,M0_wo,1
+f685340e,knowledge-update,True,M0_wo_r2,1
+f685340e,knowledge-update,True,M0_wo_r3,1
 f685340e,knowledge-update,True,F,1
 f685340e,knowledge-update,True,R,1
 f685340e,knowledge-update,True,O,1
@@ -896,6 +1044,8 @@ f685340e_abs,knowledge-update,False,M_r3,1
 f685340e_abs,knowledge-update,False,Mord_ts,1
 f685340e_abs,knowledge-update,False,M_ts,1
 f685340e_abs,knowledge-update,False,M0_wo,1
+f685340e_abs,knowledge-update,False,M0_wo_r2,1
+f685340e_abs,knowledge-update,False,M0_wo_r3,1
 f685340e_abs,knowledge-update,False,F,1
 f685340e_abs,knowledge-update,False,R,0
 f685340e_abs,knowledge-update,False,O,1
@@ -908,6 +1058,8 @@ f9e8c073,knowledge-update,False,M_r3,1
 f9e8c073,knowledge-update,False,Mord_ts,1
 f9e8c073,knowledge-update,False,M_ts,1
 f9e8c073,knowledge-update,False,M0_wo,1
+f9e8c073,knowledge-update,False,M0_wo_r2,1
+f9e8c073,knowledge-update,False,M0_wo_r3,1
 f9e8c073,knowledge-update,False,F,1
 f9e8c073,knowledge-update,False,R,1
 f9e8c073,knowledge-update,False,O,0

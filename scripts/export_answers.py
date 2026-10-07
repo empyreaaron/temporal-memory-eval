@@ -3,7 +3,7 @@
   python scripts/export_answers.py --grades lme_final.json --fc-graded fc_graded.jsonl \
       --lme-outputs DIR [DIR ...] --fc-outputs DIR --notes notes.json [--out DIR]
 
---lme-outputs  folders holding <condition>.jsonl answer files (M0, Mnd, Mord, M, M_r2, M_r3, Mord_ts, M_ts, M0_wo, F, R, O;
+--lme-outputs  folders holding <condition>.jsonl answer files (M0, Mnd, Mord, M, M_r2, M_r3, Mord_ts, M_ts, M0_wo(_r2/_r3), F, R, O;
                the published baseline runs also used FKU/RKU/OKU file names for part of the questions)
 --notes        JSON list of {"cond", "id", "note"} written during manual review (optional)
 Writes answers_longmemeval.jsonl and answers_factconsolidation.jsonl into --out (default: work/reproduced_results).
@@ -41,7 +41,7 @@ use = ids["longmemeval_s_knowledge_update_76"] + ids["longmemeval_s_regression_2
 final = read_json(args.grades)
 notes = {(n["cond"], n["id"]): n["note"] for n in read_json(args.notes)} if args.notes else {}
 FILES = {"M0": ["M0"], "Mnd": ["Mnd"], "Mord": ["Mord"], "M": ["M"], "M_r2": ["M_r2"], "M_r3": ["M_r3"],
-         "Mord_ts": ["Mord_ts"], "M_ts": ["M_ts"], "M0_wo": ["M0_wo"], "F": ["F", "FKU"], "R": ["R", "RKU"], "O": ["O", "OKU"]}
+         "Mord_ts": ["Mord_ts"], "M_ts": ["M_ts"], "M0_wo": ["M0_wo"], "M0_wo_r2": ["M0_wo_r2"], "M0_wo_r3": ["M0_wo_r3"], "F": ["F", "FKU"], "R": ["R", "RKU"], "O": ["O", "OKU"]}
 FC_CONDS = ["FULL", "BM25", "MEM0", "MEM0_r2", "MEM0_T", "MEM0_S"]
 DATED = ("M", "M_r2", "M_r3")              # published records of these conditions predate the dates_shown field
 problems = []

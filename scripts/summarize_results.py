@@ -52,12 +52,13 @@ COND = {  # condition -> (write-time dates, answer-time order, dates shown)
     "M0": ("no", "relevance", "no"), "Mnd": ("yes", "relevance", "no"), "Mord": ("yes", BY_DAY, "no"),
     "M": ("yes", BY_DAY, "yes"), "M_r2": ("yes", BY_DAY, "yes"), "M_r3": ("yes", BY_DAY, "yes"),
     "Mord_ts": ("yes", BY_TIME, "no"), "M_ts": ("yes", BY_TIME, "yes"),
-    "M0_wo": ("no", "oldest to newest by write time (default store's created_at)", "no"),
+    "M0_wo": ("no", "oldest to newest by write time (default store's created_at)", "no"), "M0_wo_r2": ("no", "oldest to newest by write time (default store's created_at)", "no"),
+    "M0_wo_r3": ("no", "oldest to newest by write time (default store's created_at)", "no"),
     "F": ("n/a: full history", "", ""), "R": ("n/a: BM25 top-5 sessions", "", ""), "O": ("n/a: evidence sessions only", "", "")}
-MEM0 = ["M0", "Mnd", "Mord", "M", "M_r2", "M_r3", "Mord_ts", "M_ts", "M0_wo"]
+MEM0 = ["M0", "Mnd", "Mord", "M", "M_r2", "M_r3", "Mord_ts", "M_ts", "M0_wo", "M0_wo_r2", "M0_wo_r3"]
 KU_ROWS = ["M0", "Mnd", "Mord", "M", "M_r2", "M_r3", "F", "R", "O"]
 REG_ROWS = ["M0", "Mnd", "Mord", "M", "F", "R", "O"]
-OPTIONAL = [c for c in ("M0_wo", "Mord_ts", "M_ts") if any(k.startswith(c + "|") for k in final)]   # newer conditions, if run
+OPTIONAL = [c for c in ("M0_wo", "M0_wo_r2", "M0_wo_r3", "Mord_ts", "M_ts") if any(k.startswith(c + "|") for k in final)]   # newer conditions, if run
 
 # ---------------------------------------------------------------- every grade a table needs must be there
 need = [(c, q) for c in KU_ROWS + OPTIONAL for q in KU] + [(c, q) for c in REG_ROWS for q in REG]
@@ -130,7 +131,7 @@ for (c, q), xs in tagged.items():
     else:
         report["unmatched"] += 1
 # published runs: item = store:question; store "lme0" = default store (M0, M0_wo), "lme"/"lme_M" = dated store
-DEFAULT_STORE = ["M0", "M0_wo"]
+DEFAULT_STORE = ["M0", "M0_wo", "M0_wo_r2", "M0_wo_r3"]
 STORE_CONDS = {"lme0": DEFAULT_STORE, "lme": [c for c in MEM0 if c not in DEFAULT_STORE],
                "lme_M": [c for c in MEM0 if c not in DEFAULT_STORE]}
 untagged = collections.defaultdict(list)

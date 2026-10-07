@@ -17,7 +17,8 @@ Two tasks, all answers from the same model and the same answer settings:
        mem0's relevance order. Mord_ts and M_ts are the same conditions sorted by the full timestamp; they
        are not run unless requested with --variants (supplementary results, 2026-10-07).
        M0_wo  the plain default store, listed by mem0's own created_at (the write order) with the "oldest to
-            newest" line; no dates shown. Run with --default-variant M0_wo (supplementary results, 2026-10-07).
+            newest" line; no dates shown. Run with --default-variant M0_wo (supplementary results, 2026-10-07);
+            M0_wo_r2 and M0_wo_r3 repeat it on the same stores for noise.
        run_baselines.py supplies F/R/O for the same questions.
 
 Usage (from the repository root):
@@ -151,7 +152,8 @@ def store_settings(cfg, kind):
     return s
 
 
-DEFAULT_VARIANTS = {"M0": ("relevance", False), "M0_wo": ("time", False)}   # answer variants of the default store
+DEFAULT_VARIANTS = {"M0": ("relevance", False), "M0_wo": ("time", False),    # answer variants of the default store
+                    "M0_wo_r2": ("time", False), "M0_wo_r3": ("time", False)}  # r2/r3 repeat M0_wo for noise
 
 
 def variant_def(cfg, v):
@@ -631,7 +633,8 @@ def main():
     ap.add_argument("--variants", help="override lme_variants (patched-store answer variants), e.g. M,Mnd,Mord")
     ap.add_argument("--default-usage", help="which questions also get the plain-default M0 run: all, in_c1 or a count")
     ap.add_argument("--default-variant", choices=sorted(DEFAULT_VARIANTS),
-                    help="answer variant on the default store: M0 (relevance order) or M0_wo (write order, no dates)")
+                    help="answer variant on the default store: M0 (relevance order) or M0_wo (write order, no dates; "
+                         "M0_wo_r2/M0_wo_r3 repeat it)")
     args = ap.parse_args()
     cfg, key, cfg_name = load_config()
     if args.fc_conds:
