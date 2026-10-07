@@ -48,13 +48,13 @@ class FakeMemory:
 
 
 class TestOrdering(unittest.TestCase):
-    def run_variants(self, variants):
+    def run_variants(self, variants, mode="patched"):
         with tempfile.TemporaryDirectory() as d:
             cfg = dict(CFG, _fp={}, _run="test")
             item = {"id": "q", "type": "knowledge-update", "question": "Q", "question_date": "2023/01/02", "sessions": []}
             prompts = []
             with mock.patch.object(runner, "make_memory", return_value=FakeMemory()):
-                runner.lme_item(cfg, "", None, lambda p, rec: prompts.append(p) or "a", item, d, d, d, "patched", variants)
+                runner.lme_item(cfg, "", None, lambda p, rec: prompts.append(p) or "a", item, d, d, d, mode, variants)
             return {v: read_jsonl(os.path.join(d, f"{v}.jsonl"))[-1] for v in variants}, prompts
 
     def test_published_order_is_by_day_only(self):
@@ -68,6 +68,15 @@ class TestOrdering(unittest.TestCase):
         self.assertEqual(recs["Mord_ts"]["n_undated"], 1)
         self.assertIn("without a known date come last", prompts[0])
         self.assertIn("- (2023/01/01) old\n- (2023/01/01) new\n- (unknown date) undated", prompts[1])
+
+    def test_default_store_write_order(self):
+        recs, prompts = self.run_variants(["M0", "M0_wo"], mode="default")
+        self.assertEqual([x["text"] for x in recs["M0"]["retrieved"]], ["new", "undated", "old"])
+        self.assertNotIn("oldest to newest", prompts[0])
+        self.assertEqual([x["text"] for x in recs["M0_wo"]["retrieved"]], ["old", "new", "undated"])
+        self.assertEqual((recs["M0_wo"]["order"], recs["M0_wo"]["dates_shown"]), ("time", False))
+        self.assertIn("oldest to newest", prompts[1])
+        self.assertNotIn("(2023/01/01)", prompts[1])
 
     def test_offset_times_compare_in_utc(self):
         self.assertLess(runner.time_key("2023-01-01T23:00:00-05:00"), runner.time_key("2023-01-02T05:00:00+00:00"))

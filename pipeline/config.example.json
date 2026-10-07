@@ -1,5 +1,5 @@
 {
-  "_comment": "Copy to pipeline/config.local.json and put your key there (that file is git-ignored). Prices are DeepSeek peak rates per million tokens; off-peak is half. lme_variants lists the published conditions; Mord_ts and M_ts (full-timestamp order, not part of the published results) run only when named with --variants.",
+  "_comment": "Copy to pipeline/config.local.json and put your key there (that file is git-ignored). Prices are DeepSeek peak rates per million tokens; off-peak is half. lme_variants lists the main conditions; Mord_ts and M_ts (full-timestamp order, supplementary results of 2026-10-07) run only when named with --variants, and M0_wo with --default-variant.",
   "base_url": "https://api.deepseek.com",
   "model": "deepseek-flash",
   "api_key": "PASTE_YOUR_KEY_HERE",

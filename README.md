@@ -13,7 +13,7 @@ old fact  ──►  new fact  ──►  question about the current state
 All numbers are from `results/*.csv`. Every condition uses the same answer model, the same answer settings and the same questions. The prompts differ by condition, as listed under [Setup](#setup-of-the-main-experiments): the baselines put chat history in the prompt, the mem0 conditions put memories, and MEM0_T also uses a different conflict rule. Within each comparison below, only what the tables list changes.
 
 1. **In this setup, default mem0 answered 22 of 76 update questions wrong (29%).** These are the 76 LongMemEval-S knowledge-update questions. Memories were listed as `- {memory}` in mem0's relevance order without dates, as in mem0's quick-start. This is a rate on this benchmark, not a general error rate.
-2. **Keeping time fixes most of it.** Storing each conversation's real date and giving the answer model its memories oldest to newest raises this to 68–70/76 (mean ≈ 91%). That is on par with feeding the whole ~105k-token chat history (68/76), with about 1.1k tokens in the answer prompt. Both figures count the answer call only. Building the memory store is extra: in our runs it took a median of 48 extraction calls and about 527k input tokens per question's chat history (most of it cache hits). That cost is paid once per history and shared by every later question about it, which a single-question benchmark does not show.
+2. **Keeping time fixes most of it.** Storing each conversation's real date and giving the answer model its memories oldest to newest raises this to 68–70/76 (mean ≈ 91%). (A later run showed that on these questions the ordering alone, using mem0's own write times without the dates, reached 68 as well: see [Supplementary runs](#supplementary-runs-2026-10-07).) That is on par with feeding the whole ~105k-token chat history (68/76), with about 1.1k tokens in the answer prompt. Both figures count the answer call only. Building the memory store is extra: in our runs it took a median of 48 extraction calls and about 527k input tokens per question's chat history (most of it cache hits). That cost is paid once per history and shared by every later question about it, which a single-question benchmark does not show.
 3. **Ordering is the step that matters.** Decomposing the intervention step by step:
 
    | Step | Fixed | Broken | Net | Verdict |
@@ -25,9 +25,9 @@ All numbers are from `results/*.csv`. Every condition uses the same answer model
 
    A step counts as a clear effect only if net ≥ 5 and fixed ≥ 3× broken. We wrote that rule down before the run. Two steps change more than one thing: Mnd → Mord adds both the ordering and a one-line "oldest to newest" note, and Mord → M drops that note while adding a date to each memory.
 
-   The ordering is by calendar day. Memories from the same day kept mem0's relevance order, although the store holds their full timestamps. So "oldest to newest" was only true day by day: in 38 of the 76 questions, at least two same-day memories in the list were out of time order. This is a property of the list, not a count of wrong answers. The runner now also has full-timestamp variants (`Mord_ts`, `M_ts`), which have not been run.
+   The ordering is by calendar day. Memories from the same day kept mem0's relevance order, although the store holds their full timestamps. So "oldest to newest" was only true day by day: in 38 of the 76 questions, at least two same-day memories in the list were out of time order. This is a property of the list, not a count of wrong answers. Sorting by full timestamp instead (`Mord_ts`, `M_ts`, run on 2026-10-07) changed nothing material; see [Supplementary runs](#supplementary-runs-2026-10-07).
 
-   Scope: on this memory store, written with real dates, explicit date labels added no net gain over the ordered list. For context, about 16% of the retrieved memory texts already contained a date written by the extractor. We did not test ordering on a store with no dates anywhere, or date labels without ordering.
+   Scope: on this memory store, written with real dates, explicit date labels added no net gain over the ordered list. For context, about 16% of the retrieved memory texts already contained a date written by the extractor. We did not test date labels without ordering. Ordering on the default store, with no dates added, was tested later: see [Supplementary runs](#supplementary-runs-2026-10-07).
 4. **The same principle holds on a second benchmark.** On MemoryAgentBench FactConsolidation (200 conflicting-fact questions), mem0 scored 176/200. Two fixes reached 197 and 198:
    - giving the answer model its memories in write order: sorted by mem0's `created_at`, each labelled with its write position, plus a rule that a larger label is newer: 197/200. Order, labels and rule changed together, so the 197 belongs to the combination, not to the labels alone. A label marks one distinct `created_at` value, not one `add()` call: the 10 add batches at 6k produced 17 distinct timestamps, and the 47 at 32k produced 84;
    - re-ingesting with the extractor told to write one memory per fact, not to merge facts, and to keep each fact's serial number in the text: 198/200. This changes several things at once, so the gain cannot be attributed to the serial numbers alone.
@@ -35,6 +35,29 @@ All numbers are from `results/*.csv`. Every condition uses the same answer model
    Feeding every fact directly scored 198/200.
 5. **No aggregate regression observed in a 20-question check.** On 20 multi-session and temporal-reasoning questions, the whole intervention went from 13 to 16 correct (4 fixed, 1 broken, all on temporal-reasoning questions). Twenty questions can only reveal large regressions.
 6. **Default imports write the wrong date.** When old conversations are imported, relative times like "last week" are resolved against *today*. The wrong absolute date then lands in the memory text. Of the 22 default-mode errors, 6 cite such dates, for example a cat adopted in early 2023 stored as "since around December 2025".
+
+## Supplementary runs (2026-10-07)
+
+Three more answer variants on the same 76 questions, written down with their decision rule before the run (same rule as above). They are answer calls only: no memory store was built or changed, and each variant got exactly the same 20 retrieved memories as its comparison condition (checked 76/76). Grading as before: automatic pass, then a blind review of 74 answers (2 automatic "correct" verdicts were overturned); the author spot-checked the 3 borderline calls and agreed with all of them.
+
+| Variant | Memory store | Order given to the model | Dates shown | Correct /76 | vs. | Fixed | Broken | Net | Verdict |
+|---|---|---|---|---|---|---|---|---|---|
+| **M0_wo** | default (no dates added) | by mem0's own `created_at`, i.e. write order, plus the "oldest to newest" note | no | **68** | M0 (54) | 16 | 2 | **+14** | **clear effect** |
+| Mord_ts | dated | by full timestamp, plus the note | no | 68 | Mord (68) | 1 | 1 | 0 | no clear effect |
+| M_ts | dated | by full timestamp | yes | 69 | M (68) | 1 | 0 | +1 | no clear effect |
+
+What this adds:
+
+- **On these questions, ordering does not need the date fix.** Listing the default store's memories by mem0's own write time, with one line saying they run oldest to newest, moved 54 → 68: the same gain as the whole intervention. This works when the write order follows the conversation order. Here each session was imported oldest first, in one `add()` call, so its memories share one timestamp and keep relevance order among themselves. In a live app `created_at` is the real time; imported history has to be added in time order, or given its real dates through `metadata`.
+- Once the list is ordered, write-time dates added no net gain on these questions (M0_wo 68 vs Mord_ts 68: 1 fixed, 1 broken). This compares two different stores, so it is descriptive only.
+- **Dates still matter for questions about time.** On the 10 temporal-reasoning regression questions, write-time dates alone (M0 → Mnd, relevance order) moved 6 → 9, and ordering added nothing there. Ten questions is a small sample. M0_wo was not run on the regression questions.
+- Sorting by full timestamp instead of by calendar day changed nothing material, so the day-level ordering of Mord and M does not affect their results.
+- One way write order fails: in `618f13b2` the extractor wrote a second memory restating the old value (worn "four times") 13 seconds after the memory with the new value ("six"), so write order put the old value last, and M0_wo answered "four".
+- `a2f3aa27` (see Dataset issues) counts in M0_wo's favour too; without it M0_wo is 67.
+- Before the run we predicted about 62 for M0_wo; it was 68.
+- Answer calls: M0_wo used a median of 228 reasoning tokens, against 604 for M0 on the same store. This is an association, as with the latency note below.
+
+**Retrieval coverage** (offline, no API calls): for each knowledge-update question, we checked whether the memory stating the current value was among the 20 retrieved, and at which rank. Of the 76 questions, 6 are abstention questions and 1 is the `852ce960` gold issue. For the other 69, the current value was in the top 20 in both stores (69/69), and in the top 5 in 67 (default store) and 68 (dated store). So every error on these 69 questions, in every mem0 condition, was a wrong choice between versions that had both been retrieved, not a retrieval miss. Ordering can only help once retrieval has found the new value; stores with many memories and near-duplicates may not meet that. Ranks were judged by an AI reviewer from the exported memories: `results/longmemeval_retrieval_coverage_ku76.csv`.
 
 ## Why it happens (mem0 2.1.0)
 
@@ -97,7 +120,7 @@ Related upstream threads: [#4956](https://github.com/mem0ai/mem0/issues/4956) (s
   - Reporting "the records conflict", or listing the old and new value without choosing, counts as wrong.
   - Reporting an old value plus a later plan to change it, without saying which holds now, counts as wrong.
 - **Who graded**: grading was done mainly by an AI reviewer. The author spot-checked 22 items and overturned 2.
-- **Dataset issues**: 2 LongMemEval gold answers appear inconsistent with their evidence. One (`852ce960`) is missed by every condition. The other (`a2f3aa27`, gold "1300" where the user only said "close to 1300") is graded correct only for the default condition M0, which answered "nearing 1300"; it therefore counts once in M0's favour (it is one of the 5 "broken" in the M0 → Mnd step). A third is debatable: `07741c45` takes the user's stated plan to move their sneakers to a closet shoe rack as done; every condition now misses it. The dataset is not consistent about plans: in `4d6b87c8` the gold counts only the confirmed value (25 titles, not the 27 the user planned to reach). So the same cautious answer, "the confirmed value is X; the planned change is not confirmed", is graded correct there and wrong here. We grade every question against its gold. 2 FactConsolidation items are missed identically by FULL, MEM0_T and MEM0_S. All these items are kept in the scores.
+- **Dataset issues**: 2 LongMemEval gold answers appear inconsistent with their evidence. One (`852ce960`) is missed by every condition. The other (`a2f3aa27`, gold "1300" where the user only said "close to 1300") is graded correct only for the default-store conditions M0 and M0_wo, which answered "nearing 1300"; it therefore counts once in their favour (it is one of the 5 "broken" in the M0 → Mnd step). A third is debatable: `07741c45` takes the user's stated plan to move their sneakers to a closet shoe rack as done; every condition now misses it. The dataset is not consistent about plans: in `4d6b87c8` the gold counts only the confirmed value (25 titles, not the 27 the user planned to reach). So the same cautious answer, "the confirmed value is X; the planned change is not confirmed", is graded correct there and wrong here. We grade every question against its gold. 2 FactConsolidation items are missed identically by FULL, MEM0_T and MEM0_S. All these items are kept in the scores.
 
 ## Limitations
 
@@ -107,6 +130,7 @@ Related upstream threads: [#4956](https://github.com/mem0ai/mem0/issues/4956) (s
 - Token, reasoning and latency figures describe the answer call only. Latency is the time of the answer API request. It leaves out retrieval, embedding and building the memory store; for F/R/O in the published runs it also includes any retries.
 - Latency is a by-product, not a target. Default-mode answers were slower (median 3.5 s vs 1.3–1.8 s for the dated store) and reasoned more: median 604 reasoning tokens for M0, 267 for Mnd, and 142–172 for the date-ordered conditions. We observed the association; we did not establish that reasoning length explains the whole latency gap.
 - The published runs logged each answer call's memory store, not its answer variant. Per-condition figures were recovered by matching each logged call to its answer: same question and store, time order, and the exact answer length the log records. On the 76 questions, the four conditions that had been pooled (Mnd, M, M_r2, M_r3) made 304 calls, and all of them matched. 8 were left out as ambiguous (two variants answered in the same second with the same answer length), so some rows average 74 calls (`telemetry_n`). The same matching reproduces exactly the M0 and Mord figures, which were already separable (76 calls each). The runner now writes one call_id into each answer record and its call log entry, so only the call behind the graded answer counts.
+- Retrieval was not the bottleneck in this setup (about 430 memories per question's history, top 20 retrieved; see Retrieval coverage). The ordering results say nothing about stores where the current value is not retrieved.
 - The fix itself is not new. The contribution is measuring its effect under controlled conditions and isolating which part matters.
 
 ## Reproduce from scratch
@@ -129,7 +153,7 @@ Python 3.10. `pip install -r requirements.txt`. An API key for DeepSeek: the res
    python pipeline/run_mem0.py --task lme                # 76 knowledge-update questions: M0, Mnd, Mord, M (+2 reruns)
    python pipeline/run_mem0.py --task lme --lme-types multi-session,temporal-reasoning --variants M,Mnd,Mord
    ```
-   Optional, not part of the published results: `--task lme --variants Mord_ts,M_ts --default-usage 0` orders memories by full timestamp instead of by day. Run it in the same work directory after the main run so it reuses the memory stores.
+   Supplementary runs (2026-10-07): `--task lme --variants Mord_ts,M_ts --default-variant M0_wo --default-usage all` adds the full-timestamp variants and the default store in write order. Run it in the same work directory after the main run: it only answers, reusing the memory stores.
 
    Every answer record carries a fingerprint of the settings, prompts and inputs that produced it, and each memory store records how it was built. If you change the model, a prompt, `top_k` or the inputs, the runners refuse to resume over the old results instead of mixing them; use a new work directory (`TME_WORK`). Each run appends its settings (without the key), package versions and input checksums to `work/outputs/run_manifest.jsonl`.
 5. **Grade.**
@@ -155,11 +179,11 @@ Offline checks of this bookkeeping (no key, no network): `python -m unittest dis
 ```
 pipeline/   prepare_data.py, run_baselines.py, run_mem0.py, grade.py, config.example.json
 repro/      deterministic ranking repro + import-date repro, with recorded outputs
-results/    summary and per-question CSVs, plus every graded answer (answers_*.jsonl)
+results/    summary and per-question CSVs, every graded answer (answers_*.jsonl), retrieval coverage ranks
 scripts/    summarize_results.py and export_answers.py (build results/ from graded runs)
 data/       question_ids.json (which benchmark questions were used)
 tests/      offline checks of resuming, ordering, grading and summary bookkeeping
-CHANGELOG.md  corrections made after the first release
+CHANGELOG.md  corrections and additions after the first release
 ```
 
 ## AI assistance

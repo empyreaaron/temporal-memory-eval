@@ -52,11 +52,12 @@ COND = {  # condition -> (write-time dates, answer-time order, dates shown)
     "M0": ("no", "relevance", "no"), "Mnd": ("yes", "relevance", "no"), "Mord": ("yes", BY_DAY, "no"),
     "M": ("yes", BY_DAY, "yes"), "M_r2": ("yes", BY_DAY, "yes"), "M_r3": ("yes", BY_DAY, "yes"),
     "Mord_ts": ("yes", BY_TIME, "no"), "M_ts": ("yes", BY_TIME, "yes"),
+    "M0_wo": ("no", "oldest to newest by write time (default store's created_at)", "no"),
     "F": ("n/a: full history", "", ""), "R": ("n/a: BM25 top-5 sessions", "", ""), "O": ("n/a: evidence sessions only", "", "")}
-MEM0 = ["M0", "Mnd", "Mord", "M", "M_r2", "M_r3", "Mord_ts", "M_ts"]
+MEM0 = ["M0", "Mnd", "Mord", "M", "M_r2", "M_r3", "Mord_ts", "M_ts", "M0_wo"]
 KU_ROWS = ["M0", "Mnd", "Mord", "M", "M_r2", "M_r3", "F", "R", "O"]
 REG_ROWS = ["M0", "Mnd", "Mord", "M", "F", "R", "O"]
-OPTIONAL = [c for c in ("Mord_ts", "M_ts") if any(k.startswith(c + "|") for k in final)]   # newer conditions, if run
+OPTIONAL = [c for c in ("M0_wo", "Mord_ts", "M_ts") if any(k.startswith(c + "|") for k in final)]   # newer conditions, if run
 
 # ---------------------------------------------------------------- every grade a table needs must be there
 need = [(c, q) for c in KU_ROWS + OPTIONAL for q in KU] + [(c, q) for c in REG_ROWS for q in REG]
@@ -128,8 +129,10 @@ for (c, q), xs in tagged.items():
         groups[c].append(mine[0]); how[c].add(source)
     else:
         report["unmatched"] += 1
-# published runs: item = store:question; store "lme0" = default store (M0), "lme"/"lme_M" = dated store
-STORE_CONDS = {"lme0": ["M0"], "lme": [c for c in MEM0 if c != "M0"], "lme_M": [c for c in MEM0 if c != "M0"]}
+# published runs: item = store:question; store "lme0" = default store (M0, M0_wo), "lme"/"lme_M" = dated store
+DEFAULT_STORE = ["M0", "M0_wo"]
+STORE_CONDS = {"lme0": DEFAULT_STORE, "lme": [c for c in MEM0 if c not in DEFAULT_STORE],
+               "lme_M": [c for c in MEM0 if c not in DEFAULT_STORE]}
 untagged = collections.defaultdict(list)
 for x in calls:
     store, q = x["item"].split(":")[:2]
@@ -201,8 +204,12 @@ with open(os.path.join(args.out, "longmemeval_decomposition_steps.csv"), "w", ne
     w = csv.writer(f); w.writerow(["step", "from", "to", "fixed", "broken", "net", "verdict"])
     steps = [("write-time dates", "M0", "Mnd"), ("chronological order (by day)", "Mnd", "Mord"),
              ("show dates", "Mord", "M"), ("whole intervention", "M0", "M")]
+    if "M0_wo" in OPTIONAL:
+        steps.append(("write order on the default store, no dates", "M0", "M0_wo"))
     if "Mord_ts" in OPTIONAL:
         steps.append(("full-timestamp order instead of by day", "Mord", "Mord_ts"))
+    if "M_ts" in OPTIONAL:
+        steps.append(("full-timestamp order instead of by day, dates shown", "M", "M_ts"))
     for label, a, b in steps:
         fixed = sum(1 for q in KU if not g(a, q) and g(b, q)); broken = sum(1 for q in KU if g(a, q) and not g(b, q))
         clear = fixed - broken >= 5 and fixed >= 3 * broken

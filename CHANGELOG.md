@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-10-07: supplementary runs and retrieval coverage
+
+No published score changed. Three answer-only variants were added on the 76 knowledge-update questions, with their decision rule written down before the run; see "Supplementary runs" in the README.
+
+- **M0_wo**: the default store, listed by mem0's own `created_at` (write order) with the "oldest to newest" note, no dates: 68/76 (M0 54; 16 fixed, 2 broken; clear effect).
+- **Mord_ts / M_ts**: full-timestamp order instead of calendar day: 68 and 69/76 (no clear effect against Mord 68 and M 68).
+- New file `results/longmemeval_retrieval_coverage_ku76.csv`: the rank at which the current value was retrieved, per question and store. All 69 answerable questions had it in the top 20.
+- `results/longmemeval_ku76_summary.csv`, `longmemeval_decomposition_steps.csv`, `longmemeval_per_question.csv` and `answers_longmemeval.jsonl` gain rows for the three variants; every earlier row is unchanged (checked by rebuilding the published files byte for byte from the earlier grades).
+- `pipeline/run_mem0.py` gains `--default-variant M0_wo`; fingerprints of all published conditions are unchanged. `grade.py`, `summarize_results.py` and `export_answers.py` know the new condition, and the default store's telemetry is now matched across both of its variants. One new offline test.
+- The runs were made with the same experiment code as the published ones; the answers, grades and review notes are in `results/`.
+
 ## 2026-10-03: corrections after an independent review
 
 The first release is commit `4c5807f`. An independent review of that release re-derived every published score from the raw run logs and found the counts correct. It also found the issues below. Apart from one reference score (O: 72 → 71), no score changed.

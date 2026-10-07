@@ -15,7 +15,9 @@ Two tasks, all answers from the same model and the same answer settings:
        M    oldest-to-newest order with each memory's date shown; M_r2/M_r3 repeat M for noise
        Mord and M (the published conditions) sort by calendar day only: memories from the same day keep
        mem0's relevance order. Mord_ts and M_ts are the same conditions sorted by the full timestamp; they
-       are not part of the published results and are not run unless requested with --variants.
+       are not run unless requested with --variants (supplementary results, 2026-10-07).
+       M0_wo  the plain default store, listed by mem0's own created_at (the write order) with the "oldest to
+            newest" line; no dates shown. Run with --default-variant M0_wo (supplementary results, 2026-10-07).
        run_baselines.py supplies F/R/O for the same questions.
 
 Usage (from the repository root):
@@ -149,6 +151,9 @@ def store_settings(cfg, kind):
     return s
 
 
+DEFAULT_VARIANTS = {"M0": ("relevance", False), "M0_wo": ("time", False)}   # answer variants of the default store
+
+
 def variant_def(cfg, v):
     order = ("time" if v in cfg.get("lme_variants_time_order", []) else
              "date" if v in cfg["lme_variants_date_order"] else "relevance")
@@ -167,7 +172,7 @@ def output_fingerprints(cfg, inputs_sha):
             spec.update(top_k=cfg["mem0_top_k"], store=store_settings(cfg, FC_MEM0_STORE[c]))
         fps[f"fc_{c}.jsonl"] = digest(spec)
     for v, mode in [(v, "patched") for v in cfg["lme_variants"]] + [(cfg["lme_default_variant"], "default")]:
-        order, dates = variant_def(cfg, v) if mode == "patched" else ("relevance", False)
+        order, dates = variant_def(cfg, v) if mode == "patched" else DEFAULT_VARIANTS[v]
         fps[f"{v}.jsonl"] = digest(dict(base, prompt=LME_PROMPT, order=order, dates_shown=dates,
                                         top_k=cfg["mem0_top_k"], store=store_settings(cfg, mode),
                                         inputs=inputs_sha.get("lme")))
@@ -589,7 +594,7 @@ def lme_item(cfg, key, meter, answer, r, store_root, dump_dir, out_dir, mode, va
             # Two separate switches. Order: oldest to newest, or mem0's relevance order, which leaks no
             # recency information. Display: show each memory's date or not. Mord = date order, no dates,
             # with one line saying the list runs oldest to newest (otherwise the model cannot know).
-            order, show_dates = variant_def(cfg, v) if mode == "patched" else ("relevance", False)
+            order, show_dates = variant_def(cfg, v) if mode == "patched" else DEFAULT_VARIANTS[v]
             retrieved = order_memories(by_score, order)
             n_undated = sum(1 for x in retrieved if not time_key(x["created_at"]))
             rec = new_rec(cfg, f"{v}.jsonl", id=qid, cond=v, mode=mode, type=r["type"], n_memories=n_mem,
@@ -625,6 +630,8 @@ def main():
     ap.add_argument("--lme-types", help="override lme_types, e.g. multi-session,temporal-reasoning")
     ap.add_argument("--variants", help="override lme_variants (patched-store answer variants), e.g. M,Mnd,Mord")
     ap.add_argument("--default-usage", help="which questions also get the plain-default M0 run: all, in_c1 or a count")
+    ap.add_argument("--default-variant", choices=sorted(DEFAULT_VARIANTS),
+                    help="answer variant on the default store: M0 (relevance order) or M0_wo (write order, no dates)")
     args = ap.parse_args()
     cfg, key, cfg_name = load_config()
     if args.fc_conds:
@@ -635,6 +642,8 @@ def main():
         cfg["lme_variants"] = args.variants.split(",")
     if args.default_usage:
         cfg["lme_default_usage"] = args.default_usage
+    if args.default_variant:
+        cfg["lme_default_variant"] = args.default_variant
     bad = [c for c in cfg["fc_conditions"] if c not in ("FULL", "BM25", *FC_MEM0_STORE)]
     if bad:
         sys.exit(f"Unknown fc condition(s): {bad}")
